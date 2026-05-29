@@ -56,6 +56,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--blac
 .btn-ghost:hover{background:var(--gray-50);color:var(--black);}
 .btn-sm{padding:6px 12px;font-size:12px;}
 .content{padding:28px;flex:1;}
+.content-nopad{padding:0;flex:1;}
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
 .stat-card{background:#fff;border:1px solid var(--gray-100);border-radius:var(--r);padding:14px 16px;}
@@ -281,8 +282,8 @@ textarea.form-input{resize:vertical;}
 .cliente-feedback-label{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
 .cliente-feedback-text{font-size:13px;color:var(--red);font-style:italic;}
 /* TAREAS */
-.tareas-layout{padding:0;}
-.tareas-header-wrap{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;}
+.tareas-layout{padding:0;width:100%;}
+.tareas-header-wrap{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray-100);}
 .tareas-filters-wrap{padding:0 0 0;border-bottom:1px solid var(--gray-100);}
 .tareas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
 .tareas-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
@@ -490,7 +491,7 @@ textarea.form-input{resize:vertical;}
   </div>
 
   <!-- TAREAS -->
-  <div class="content" id="tab-tareas" style="display:none;padding:0;flex-direction:column">
+  <div id="tab-tareas" style="display:none;flex:1;flex-direction:column;background:#fff;overflow-y:auto;">
     <div class="tareas-layout">
       <div class="tareas-header-wrap">
         <div>
@@ -826,7 +827,7 @@ const ALL_TABS=['clientes','planificacion','dialogos','reportes','tareas','emple
 function switchTab(tab){
   ALL_TABS.forEach(t=>{
     const el=document.getElementById('tab-'+t);
-    if(el)el.style.display=t===tab?(t==='planificacion'||t==='dialogos'?'flex':''):'none';
+    if(el)el.style.display=t===tab?(t==='planificacion'||t==='dialogos'||t==='tareas'?'flex':''):'none';
   });
   document.querySelectorAll('.nav-item').forEach((el,i)=>{
     el.classList.toggle('active',['clientes','planificacion','dialogos','reportes','tareas','empleados'][i]===tab);
@@ -1693,7 +1694,22 @@ async function saveTarea(){
 // ── MES INFO BAR (fecha y responsable general por mes) ──
 async function saveMesInfo(mesId,field,value){
   await db.from('meses').update({[field]:value||null}).eq('id',mesId);
-  showToast('Guardado');
+  // If responsable changes, update all tareas for this mes
+  if(field==='responsable_id'&&value){
+    const{data:piezas}=await db.from('contenido').select('id').eq('mes_id',mesId);
+    if(piezas&&piezas.length){
+      // Get titles of piezas to find matching tareas
+      const{data:tareasRel}=await db.from('tareas').select('id').eq('empleado_id',null).not('titulo','is',null);
+      // Update tareas that are unassigned and belong to this mes's cliente
+      const clienteId=activePlanCliente?.id||activDialCliente?.id;
+      if(clienteId){
+        await db.from('tareas').update({empleado_id:value}).eq('cliente_id',clienteId).is('empleado_id',null);
+      }
+    }
+    showToast('Responsable actualizado y asignado a tareas pendientes');
+  }else{
+    showToast('Guardado');
+  }
 }
 
 // ── PLAN REDESIGN: render with new style ──
