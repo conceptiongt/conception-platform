@@ -516,28 +516,7 @@ textarea.form-input{resize:vertical;}
         </div>
       </div>
     </div>
-    <div class="panel-section" id="dialogosSection">
-      <div class="panel-section-title">Diálogos / guión del reel</div>
-      <textarea class="form-input" id="p-dialogos" rows="5" placeholder="Escribe el guión o usa el asistente IA…"></textarea>
-      <div class="claude-box">
-        <div class="claude-box-head"><span class="claude-dot"></span><span class="claude-box-title">Asistente IA — Generar diálogos</span></div>
-        <div class="claude-body">
-          <div class="claude-prompt">Cuéntame de qué trata el reel:</div>
-          <textarea class="claude-textarea" id="claude-dial-prompt" placeholder="Ej: Reel de 30s explicando 3 tips, tono cercano y profesional…"></textarea>
-          <div class="claude-actions">
-            <button class="btn btn-primary btn-sm" onclick="generateDialogos()">✦ Generar diálogos</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearDialResult()">Limpiar</button>
-          </div>
-          <div id="claude-dial-result" style="display:none">
-            <div class="claude-result" id="claude-dial-text"></div>
-            <div class="claude-result-actions">
-              <button class="btn-use" onclick="useDialogos()">Usar estos diálogos</button>
-              <button class="btn btn-ghost btn-sm" onclick="generateDialogos()">Regenerar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
     <!-- MEDIA UPLOAD -->
     <div class="panel-section" id="mediaSection">
       <div class="panel-section-title" id="mediaSectionTitle">Archivo de video</div>
@@ -554,6 +533,7 @@ textarea.form-input{resize:vertical;}
       <div class="panel-section-title" style="color:var(--red)">💬 Comentario del cliente</div>
       <div id="clienteFeedbackText" style="padding:12px;background:var(--red-light);border-left:3px solid var(--red);border-radius:var(--rs);font-size:13px;color:var(--red);font-style:italic;line-height:1.6"></div>
     </div>
+    <textarea id="p-dialogos" style="display:none"></textarea>
     <div class="panel-section">
       <div class="panel-section-title">Notas internas</div>
       <textarea class="form-input" id="p-notas" rows="2" placeholder="Referencias, instrucciones de producción…"></textarea>
@@ -873,7 +853,7 @@ function openPiezaPanel(pieza=null,tipoDefault='reel'){
     if(feedbackText)feedbackText.textContent='';
   }
   selectTipo(currentTipo);
-  clearCopyResult();clearDialResult();
+  clearCopyResult();
   renderMediaPreview();
   document.getElementById('panelOverlay').classList.add('open');
   document.getElementById('panel').classList.add('open');
@@ -887,7 +867,7 @@ function closePanel(){
 function selectTipo(tipo){
   currentTipo=tipo;
   document.querySelectorAll('.tipo-opt').forEach(el=>el.classList.toggle('selected',el.dataset.tipo===tipo));
-  document.getElementById('dialogosSection').style.display=tipo==='reel'?'':'none';
+
   // Update upload zone
   const title=document.getElementById('mediaSectionTitle');
   const sub=document.getElementById('uploadSub');
@@ -1012,7 +992,27 @@ function renderDialogosArea(){
           </div>
         </div>
         <div style="padding:18px">
-          ${c.dialogos?`<div style="font-size:13.5px;line-height:1.8;color:var(--gray-800);white-space:pre-wrap;font-family:'DM Sans',sans-serif">${esc(c.dialogos)}</div>`:`<div style="font-size:13px;color:var(--gray-300);font-style:italic">Sin diálogos registrados para este reel.</div>`}
+          <textarea id="dial-${c.id}" class="form-input" rows="6" placeholder="Escribe el guión/diálogos para este reel…" style="margin-bottom:10px">${esc(c.dialogos||'')}</textarea>
+          <div class="claude-box">
+            <div class="claude-box-head"><span class="claude-dot"></span><span class="claude-box-title">Asistente IA — Generar diálogos</span></div>
+            <div class="claude-body">
+              <div class="claude-prompt">Cuéntame de qué trata el reel:</div>
+              <textarea class="claude-textarea" id="dial-prompt-${c.id}" placeholder="Ej: Reel de 30s explicando 3 tips, tono cercano y profesional…"></textarea>
+              <div class="claude-actions" style="margin-top:10px">
+                <button class="btn btn-primary btn-sm" onclick="generateDialogosInline('${c.id}')">✦ Generar diálogos</button>
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dial-result-${c.id}').style.display='none'">Limpiar</button>
+              </div>
+              <div id="dial-result-${c.id}" style="display:none">
+                <div class="claude-result" id="dial-result-text-${c.id}"></div>
+                <div class="claude-result-actions">
+                  <button class="btn-use" onclick="useDialogosInline('${c.id}')">Usar estos diálogos</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px">
+            <button class="btn btn-primary btn-sm" onclick="saveDialogosInline('${c.id}')">Guardar diálogos</button>
+          </div>
           ${c.estado_aprobacion==='cambios'&&c.comentario_cliente?`<div class="cliente-feedback" style="margin-top:14px"><div class="cliente-feedback-label">💬 Comentario del cliente</div><div class="cliente-feedback-text">"${esc(c.comentario_cliente)}"</div></div>`:''}
         </div>
       </div>`).join('')}
@@ -1085,8 +1085,8 @@ async function loadAprobacion(clienteId,mesId){
     const urls=p.media_urls||[];
     if(!urls.length)return'';
     const pid=p.id.replace(/-/g,'');
-    if(p.tipo==='reel')return`<div class="aprob-media"><div class="aprob-media-label">Video — toca para ver en pantalla completa</div><div class="media-reel-frame" style="cursor:pointer" onclick="openLightbox('video','${urls[0]}')"><video src="${urls[0]}" style="width:100%;height:100%;object-fit:cover;display:block"></video></div></div>`;
-    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ampliar</div><div class="media-post-frame" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" alt="post" style="width:100%;height:100%;object-fit:cover;display:block"></div></div>`;
+    if(p.tipo==='reel')return`<div class="aprob-media"><div class="aprob-media-label">Video — toca para reproducir</div><div class="media-reel-frame"><video src="${urls[0]}" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;background:#000"></video></div></div>`;
+    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ampliar</div><div class="media-post-frame" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" alt="post" style="width:100%;height:100%;object-fit:cover;display:block" onload="this.style.opacity=1" onerror="this.parentElement.innerHTML='<div style=padding:20px;text-align:center;color:#999;font-size:13px>No se pudo cargar la imagen</div>'"></div></div>`;
     if(p.tipo==='carrusel'){
       const slides=urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" onclick="openLightbox('img','${u}')">`).join('');
       const dots=urls.map((_,i)=>`<div class="carrusel-dot ${i===0?'active':''}" onclick="goSlide('${pid}',${i})"></div>`).join('');
@@ -1228,6 +1228,37 @@ function openLightbox(type,src){
   lb.innerHTML=`<div class="lightbox-close" onclick="this.parentElement.remove()">×</div>${type==='video'?`<video src="${src}" controls autoplay style="max-width:90vw;max-height:90vh;border-radius:8px">`:`<img src="${src}" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px">`}`;
   lb.onclick=function(e){if(e.target===lb)lb.remove();};
   document.body.appendChild(lb);
+}
+
+// ── DIALOGOS INLINE ──
+async function generateDialogosInline(piezaId){
+  const inst=document.getElementById('dial-prompt-'+piezaId)?.value.trim();
+  if(!inst){showToast('Describe el reel primero',true);return;}
+  const btn=document.querySelector(`[onclick="generateDialogosInline('${piezaId}')"]`);
+  if(btn){btn.textContent='✦ Generando…';btn.disabled=true;}
+  try{
+    const r=await callClaude(`Eres experto en guiones de video para redes sociales en Guatemala. Escribe guión/diálogos para reel de Instagram para "${activePlanCliente?.empresa||'el cliente'}". Instrucciones: ${inst}. Formato: diálogo natural con indicaciones de acción entre paréntesis si es necesario. Sin explicaciones.`);
+    const resultEl=document.getElementById('dial-result-text-'+piezaId);
+    const resultBox=document.getElementById('dial-result-'+piezaId);
+    if(resultEl)resultEl.textContent=r;
+    if(resultBox)resultBox.style.display='';
+  }catch(e){showToast('Error al conectar con IA',true);}
+  if(btn){btn.textContent='✦ Generar diálogos';btn.disabled=false;}
+}
+
+function useDialogosInline(piezaId){
+  const txt=document.getElementById('dial-result-text-'+piezaId)?.textContent||'';
+  const ta=document.getElementById('dial-'+piezaId);
+  if(ta)ta.value=txt;
+  showToast('Diálogos aplicados');
+}
+
+async function saveDialogosInline(piezaId){
+  const dialogos=document.getElementById('dial-'+piezaId)?.value.trim()||'';
+  const{error}=await db.from('contenido').update({dialogos}).eq('id',piezaId);
+  if(error){showToast('Error al guardar',true);return;}
+  showToast('Diálogos guardados');
+  await loadContenido(activeMesId);
 }
 
 // ── INIT ──
