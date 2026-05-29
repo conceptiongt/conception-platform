@@ -346,6 +346,9 @@ textarea.form-input{resize:vertical;}
     <button class="nav-item" onclick="switchTab('planificacion')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Planificación
     </button>
+    <button class="nav-item" onclick="switchTab('dialogos')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Diálogos
+    </button>
     <button class="nav-item" onclick="switchTab('reportes')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6M9 19H5m4 0h6m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0h4m-4 0H9"/></svg>Reportes
     </button>
@@ -419,6 +422,22 @@ textarea.form-input{resize:vertical;}
     </div>
   </div>
 
+  <!-- DIÁLOGOS -->
+  <div id="tab-dialogos" style="display:none;flex:1;overflow:hidden;">
+    <div class="plan-layout">
+      <div class="plan-sidebar">
+        <div class="plan-sidebar-head"><span class="plan-sidebar-title">Clientes</span></div>
+        <div class="cliente-list" id="dialClienteList"><div style="padding:20px;text-align:center;"><div class="spinner"></div></div></div>
+      </div>
+      <div class="plan-main" id="dialMain">
+        <div class="no-selection">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          <p>Selecciona un cliente para ver sus diálogos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- REPORTES -->
   <div class="content" id="tab-reportes" style="display:none">
     <div class="placeholder-tab">
@@ -456,7 +475,7 @@ textarea.form-input{resize:vertical;}
   </div>
 </div>
 
-<!-- MODAL MES -->
+<!-- MODAL MES PLANIFICACIÓN -->
 <div class="modal-overlay" id="modalMes" onclick="handleOverlay(event,'modalMes')">
   <div class="modal" style="max-width:400px">
     <div class="modal-header">
@@ -470,6 +489,24 @@ textarea.form-input{resize:vertical;}
     <div class="modal-footer" style="padding-top:0;border:none">
       <button class="btn btn-ghost" onclick="closeModal('modalMes')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveMes()">Crear carpeta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MES DIÁLOGOS -->
+<div class="modal-overlay" id="modalMesDialogos" onclick="handleOverlay(event,'modalMesDialogos')">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <div><div class="modal-title">Nueva carpeta de mes</div><div class="modal-sub">Para organizar los diálogos de este período</div></div>
+      <button class="modal-close" onclick="closeModal('modalMesDialogos')">×</button>
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label class="form-label">Nombre del período</label>
+      <input class="form-input" type="text" id="f-mes-dialogos-nombre" placeholder="Ej. Junio 2025, Q3 Verano…">
+    </div>
+    <div class="modal-footer" style="padding-top:0;border:none">
+      <button class="btn btn-ghost" onclick="closeModal('modalMesDialogos')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveDialMes()">Crear carpeta</button>
     </div>
   </div>
 </div>
@@ -565,20 +602,21 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 
 // ── TABS ──
 function switchTab(tab){
-  ['clientes','planificacion','reportes'].forEach(t=>{
+  ['clientes','planificacion','dialogos','reportes'].forEach(t=>{
     const el=document.getElementById('tab-'+t);
-    el.style.display=t===tab?(t==='planificacion'?'flex':''):'none';
+    if(el)el.style.display=t===tab?(t==='planificacion'||t==='dialogos'?'flex':''):'none';
   });
   document.querySelectorAll('.nav-item').forEach((el,i)=>{
-    el.classList.toggle('active',['clientes','planificacion','reportes'][i]===tab);
+    el.classList.toggle('active',['clientes','planificacion','dialogos','reportes'][i]===tab);
   });
-  const titles={clientes:'Clientes',planificacion:'Planificación',reportes:'Reportes'};
+  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes'};
   document.getElementById('pageTitle').textContent=titles[tab];
   const pc=document.getElementById('pageCount');
   const ta=document.getElementById('topbarActions');
   if(tab==='clientes'){pc.style.display='';ta.style.display='';}
   else{pc.style.display='none';ta.style.display='none';}
   if(tab==='planificacion')renderPlanClienteList();
+  if(tab==='dialogos')renderDialClienteList();
   closeSidebar();
 }
 
@@ -812,6 +850,21 @@ function renderContenidoArea(){
     </div>`;
   }
   area.innerHTML=renderSection(reels,'Reel')+renderSection(posts,'Post')+renderSection(carruseles,'Carrusel');
+}
+
+async function saveDialMes(){
+  const nombre=document.getElementById('f-mes-dialogos-nombre').value.trim();
+  if(!nombre){showToast('Ingresa un nombre',true);return;}
+  const{error,data}=await db.from('meses').insert({cliente_id:activDialCliente.id,nombre}).select().single();
+  if(error){showToast('Error: '+error.message,true);return;}
+  showToast('Carpeta creada');
+  closeModal('modalMesDialogos');
+  document.getElementById('f-mes-dialogos-nombre').value='';
+  await loadDialMeses(activDialCliente.id);
+  activDialMesId=allDialMeses[allDialMeses.length-1]?.id;
+  renderDialMain();
+  await loadDialContenido(activDialMesId);
+  renderDialArea();
 }
 
 async function saveMes(){
@@ -1230,20 +1283,173 @@ function openLightbox(type,src){
   document.body.appendChild(lb);
 }
 
+// ══ MÓDULO DIÁLOGOS ══
+let activDialCliente=null, activDialMesId=null, allDialMeses=[], allDialContenido=[];
+
+function renderDialClienteList(){
+  const list=document.getElementById('dialClienteList');
+  if(!allClientes.length){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px">Sin clientes registrados</div>';return;}
+  list.innerHTML=allClientes.map(c=>`
+    <div class="cliente-item ${activDialCliente?.id===c.id?'active':''}" onclick="selectDialClienteById('${c.id}')">
+      <div class="cliente-item-name">${esc(c.empresa)}</div>
+      <div class="cliente-item-sub">${ESTADO[c.estado]?.label||''}</div>
+    </div>`).join('');
+}
+
+async function selectDialClienteById(id){
+  const c=allClientes.find(x=>x.id===id);
+  if(!c)return;
+  activDialCliente=c; activDialMesId=null;
+  renderDialClienteList();
+  await loadDialMeses(c.id);
+  renderDialMain();
+}
+
+async function loadDialMeses(clienteId){
+  const{data}=await db.from('meses').select('*').eq('cliente_id',clienteId).order('created_at');
+  allDialMeses=data||[];
+}
+
+async function loadDialContenido(mesId){
+  const{data}=await db.from('contenido').select('*').eq('mes_id',mesId).eq('tipo','reel').order('created_at');
+  allDialContenido=data||[];
+}
+
+function renderDialMain(){
+  const main=document.getElementById('dialMain');
+  if(!activDialCliente){
+    main.innerHTML='<div class="no-selection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><p>Selecciona un cliente</p></div>';
+    return;
+  }
+  const mesActivo=allDialMeses.find(m=>m.id===activDialMesId);
+  main.innerHTML=`
+    <div class="plan-header">
+      <div><div class="plan-cliente-name">${esc(activDialCliente.empresa)}</div><div class="plan-cliente-sub">${mesActivo?esc(mesActivo.nombre):'Selecciona o crea una carpeta de mes'}</div></div>
+      <div class="plan-header-right">
+        ${activDialMesId?`<button class="btn btn-primary btn-sm" onclick="addDialReel()">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Nuevo reel
+        </button>`:''}
+      </div>
+    </div>
+    <div class="meses-tabs">
+      ${allDialMeses.map(m=>`<button class="mes-tab ${m.id===activDialMesId?'active':''}" onclick="selectDialMes('${m.id}')">${esc(m.nombre)}</button>`).join('')}
+      <button class="mes-tab-add" onclick="openModal('modalMesDialogos')">+ Nuevo mes</button>
+    </div>
+    <div class="contenido-area" id="dialArea">
+      ${activDialMesId?'<div class="spinner" style="margin:40px auto"></div>':`
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+          <div class="empty-title">Sin mes seleccionado</div>
+          <div class="empty-sub">Selecciona o crea una carpeta de mes.</div>
+          <button class="btn btn-primary" onclick="openModal('modalMesDialogos')">+ Crear carpeta de mes</button>
+        </div>`}
+    </div>`;
+  if(activDialMesId)renderDialArea();
+}
+
+async function selectDialMes(mesId){
+  activDialMesId=mesId;
+  renderDialMain();
+  await loadDialContenido(mesId);
+  renderDialArea();
+}
+
+function renderDialArea(){
+  const area=document.getElementById('dialArea');
+  if(!area)return;
+  if(!allDialContenido.length){
+    area.innerHTML=`<div class="empty-state">
+      <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+      <div class="empty-title">Sin reels en este mes</div>
+      <div class="empty-sub">Agrega un reel para empezar a escribir diálogos.</div>
+      <button class="btn btn-primary" onclick="addDialReel()">+ Nuevo reel</button>
+    </div>`;
+    return;
+  }
+  area.innerHTML=`<div style="display:flex;flex-direction:column;gap:20px">
+    ${allDialContenido.map((c,i)=>`
+      <div style="background:#fff;border:1px solid var(--gray-100);border-radius:var(--r);overflow:hidden">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);background:var(--gray-50);display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="tipo-icon tipo-reel">🎬</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:600">${c.tema?esc(c.tema):'Reel #'+(i+1)}</div>
+              <div style="font-size:11.5px;color:var(--gray-400)">Reel #${i+1}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="icon-btn del" onclick="deleteDialReel('${c.id}')">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h2M4 5h12M6 5v11a2 2 0 002 2h4a2 2 0 002-2V5"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="padding:18px">
+          <div style="margin-bottom:12px">
+            <label class="form-label" style="display:block;margin-bottom:6px">Tema del reel</label>
+            <input class="form-input" type="text" id="dial-tema-${c.id}" value="${esc(c.tema||'')}" placeholder="Ej. Beneficios del servicio X…">
+          </div>
+          <div style="margin-bottom:10px">
+            <label class="form-label" style="display:block;margin-bottom:6px">Diálogos / Guión</label>
+            <textarea id="dial-${c.id}" class="form-input" rows="7" placeholder="Escribe el guión del reel aquí…">${esc(c.dialogos||'')}</textarea>
+          </div>
+          <div class="claude-box">
+            <div class="claude-box-head"><span class="claude-dot"></span><span class="claude-box-title">Asistente IA — Generar diálogos</span></div>
+            <div class="claude-body">
+              <div class="claude-prompt">Cuéntame de qué trata el reel y el tono que buscas:</div>
+              <textarea class="claude-textarea" id="dial-prompt-${c.id}" placeholder="Ej: Reel de 30s mostrando 3 beneficios del servicio, tono profesional y cercano…"></textarea>
+              <div class="claude-actions" style="margin-top:10px">
+                <button class="btn btn-primary btn-sm" onclick="generateDialogosInline('${c.id}')">✦ Generar diálogos</button>
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dial-result-${c.id}').style.display='none'">Limpiar</button>
+              </div>
+              <div id="dial-result-${c.id}" style="display:none">
+                <div class="claude-result" id="dial-result-text-${c.id}"></div>
+                <div class="claude-result-actions">
+                  <button class="btn-use" onclick="useDialogosInline('${c.id}')">Usar estos diálogos</button>
+                  <button class="btn btn-ghost btn-sm" onclick="generateDialogosInline('${c.id}')">Regenerar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:14px">
+            <button class="btn btn-primary" onclick="saveDialogosInline('${c.id}')">Guardar diálogos</button>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+async function addDialReel(){
+  if(!activDialMesId||!activDialCliente)return;
+  const{error}=await db.from('contenido').insert({mes_id:activDialMesId,cliente_id:activDialCliente.id,tipo:'reel',tema:'',dialogos:'',copy:'',notas_internas:'',media_urls:[],estado_aprobacion:'pendiente'});
+  if(error){showToast('Error: '+error.message,true);return;}
+  showToast('Reel creado');
+  await loadDialContenido(activDialMesId);
+  renderDialArea();
+}
+
+async function deleteDialReel(id){
+  if(!confirm('¿Eliminar este reel y sus diálogos?'))return;
+  await db.from('contenido').delete().eq('id',id);
+  showToast('Reel eliminado');
+  await loadDialContenido(activDialMesId);
+  renderDialArea();
+}
+
 // ── DIALOGOS INLINE ──
 async function generateDialogosInline(piezaId){
   const inst=document.getElementById('dial-prompt-'+piezaId)?.value.trim();
   if(!inst){showToast('Describe el reel primero',true);return;}
-  const btn=document.querySelector(`[onclick="generateDialogosInline('${piezaId}')"]`);
-  if(btn){btn.textContent='✦ Generando…';btn.disabled=true;}
+  const clienteNombre=activDialCliente?.empresa||activePlanCliente?.empresa||'el cliente';
+  const btns=document.querySelectorAll(`[onclick="generateDialogosInline('${piezaId}')"]`);
+  btns.forEach(b=>{b.textContent='✦ Generando…';b.disabled=true;});
   try{
-    const r=await callClaude(`Eres experto en guiones de video para redes sociales en Guatemala. Escribe guión/diálogos para reel de Instagram para "${activePlanCliente?.empresa||'el cliente'}". Instrucciones: ${inst}. Formato: diálogo natural con indicaciones de acción entre paréntesis si es necesario. Sin explicaciones.`);
+    const r=await callClaude(`Eres experto en guiones de video para redes sociales en Guatemala. Escribe guión/diálogos para reel de Instagram para "${clienteNombre}". Instrucciones: ${inst}. Formato: diálogo natural con indicaciones de acción entre paréntesis si es necesario. Sin explicaciones adicionales.`);
     const resultEl=document.getElementById('dial-result-text-'+piezaId);
     const resultBox=document.getElementById('dial-result-'+piezaId);
     if(resultEl)resultEl.textContent=r;
     if(resultBox)resultBox.style.display='';
   }catch(e){showToast('Error al conectar con IA',true);}
-  if(btn){btn.textContent='✦ Generar diálogos';btn.disabled=false;}
+  btns.forEach(b=>{b.textContent='✦ Generar diálogos';b.disabled=false;});
 }
 
 function useDialogosInline(piezaId){
@@ -1255,10 +1461,12 @@ function useDialogosInline(piezaId){
 
 async function saveDialogosInline(piezaId){
   const dialogos=document.getElementById('dial-'+piezaId)?.value.trim()||'';
-  const{error}=await db.from('contenido').update({dialogos}).eq('id',piezaId);
+  const tema=document.getElementById('dial-tema-'+piezaId)?.value.trim()||'';
+  const{error}=await db.from('contenido').update({dialogos,tema}).eq('id',piezaId);
   if(error){showToast('Error al guardar',true);return;}
   showToast('Diálogos guardados');
-  await loadContenido(activeMesId);
+  if(activDialMesId)await loadDialContenido(activDialMesId);
+  if(activeMesId)await loadContenido(activeMesId);
 }
 
 // ── INIT ──
