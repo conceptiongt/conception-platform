@@ -161,7 +161,7 @@ textarea.form-input{resize:vertical;}
 .list-cell{padding:12px 16px;font-size:13px;border-right:1px solid var(--gray-100);min-height:48px;display:flex;align-items:center;}
 .list-cell:last-child{border-right:none;}
 .list-cell-name{font-weight:500;color:var(--black);gap:10px;}
-.list-add-row{padding:10px 16px;font-size:13px;color:var(--gray-400);cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;transition:background .15s;}
+.list-add-row{padding:12px 20px;font-size:13px;color:var(--gray-400);cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;transition:background .15s;}
 .list-add-row:hover{background:var(--gray-50);color:var(--black);}
 /* STATUS BADGES */
 .st-badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;}
@@ -281,22 +281,35 @@ textarea.form-input{resize:vertical;}
 .cliente-feedback-label{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
 .cliente-feedback-text{font-size:13px;color:var(--red);font-style:italic;}
 /* TAREAS */
-.tareas-layout{padding:24px;max-width:900px;}
+.tareas-layout{padding:0;}
+.tareas-header-wrap{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;}
+.tareas-filters-wrap{padding:0 0 0;border-bottom:1px solid var(--gray-100);}
 .tareas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
 .tareas-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.tarea-row{background:#fff;border:1px solid var(--gray-100);border-radius:var(--rs);padding:14px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .15s;}
-.tarea-row:hover{box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.tarea-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--gray-200);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;cursor:pointer;transition:all .15s;}
+.tarea-row{background:#fff;border:none;border-bottom:1px solid var(--gray-100);padding:14px 20px;margin-bottom:0;display:flex;align-items:center;gap:14px;transition:all .15s;}
+.tarea-row:hover{background:var(--gray-50);}
+.tarea-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--gray-200);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;}
 .tarea-check.en-curso{border-color:var(--blue);background:var(--blue-light);}
 .tarea-check.atrasado{border-color:var(--red);background:var(--red-light);}
 .tarea-check.terminado{border-color:var(--green);background:var(--green);}
 .tarea-check.terminado::after{content:'✓';font-size:11px;font-weight:700;color:#fff;}
+/* ESTADO BUTTONS */
+.estado-btns{display:flex;gap:4px;flex-shrink:0;}
+.estado-btn{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.estado-btn-pendiente{background:var(--gray-100);color:var(--gray-600);border-color:var(--gray-200);}
+.estado-btn-pendiente.active,.estado-btn-pendiente:hover{background:var(--gray-800);color:#fff;border-color:var(--gray-800);}
+.estado-btn-en-curso{background:var(--blue-light);color:var(--blue);border-color:var(--blue-light);}
+.estado-btn-en-curso.active,.estado-btn-en-curso:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.estado-btn-atrasado{background:var(--red-light);color:var(--red);border-color:var(--red-light);}
+.estado-btn-atrasado.active,.estado-btn-atrasado:hover{background:var(--red);color:#fff;border-color:var(--red);}
+.estado-btn-terminado{background:var(--green-light);color:var(--green);border-color:var(--green-light);}
+.estado-btn-terminado.active,.estado-btn-terminado:hover{background:var(--green);color:#fff;border-color:var(--green);}
 .tarea-body{flex:1;min-width:0;}
 .tarea-titulo{font-size:14px;font-weight:500;margin-bottom:4px;}
 .tarea-titulo.terminado{text-decoration:line-through;color:var(--gray-400);}
 .tarea-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .tarea-desc{font-size:12.5px;color:var(--gray-400);margin-bottom:6px;line-height:1.5;}
-.tarea-group-title{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;padding:16px 0 8px;border-bottom:1px solid var(--gray-100);margin-bottom:12px;}
+.tarea-group-title{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;padding:12px 20px 8px;background:var(--gray-50);border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);}
 /* MES HEADER INFO */
 .mes-info-bar{padding:12px 24px;background:var(--gray-50);border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:24px;flex-shrink:0;flex-wrap:wrap;}
 .mes-info-item{display:flex;align-items:center;gap:8px;}
@@ -308,18 +321,18 @@ textarea.form-input{resize:vertical;}
 .mes-info-select{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--black);font-weight:500;outline:none;cursor:pointer;padding:2px 4px;border-radius:4px;appearance:none;transition:background .15s;}
 .mes-info-select:hover{background:var(--gray-100);}
 /* PLAN REDESIGN */
-.plan-area{flex:1;overflow-y:auto;background:var(--gray-50);}
-.plan-list-wrap{padding:20px 24px;}
+.plan-area{flex:1;overflow-y:auto;background:#fff;}
+.plan-list-wrap{padding:0;}
 .plan-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .plan-section-label{font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;}
-.plan-row{background:#fff;border:1px solid var(--gray-100);border-radius:var(--rs);padding:0;margin-bottom:8px;display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .15s;}
-.plan-row:hover{box-shadow:0 2px 10px rgba(0,0,0,.07);border-color:var(--gray-200);}
+.plan-row{background:#fff;border:none;border-bottom:1px solid var(--gray-100);padding:0;margin-bottom:0;display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .15s;}
+.plan-row:hover{background:var(--gray-50);}
 .plan-row-accent{width:4px;flex-shrink:0;}
 .plan-row-accent.reel{background:#9d174d;}
 .plan-row-accent.post{background:#1e40af;}
 .plan-row-accent.carrusel{background:#065f46;}
 .plan-row-accent.dialogo{background:var(--purple);}
-.plan-row-body{flex:1;padding:12px 16px;display:flex;align-items:center;gap:12px;min-width:0;}
+.plan-row-body{flex:1;padding:13px 20px;display:flex;align-items:center;gap:12px;min-width:0;}
 .plan-row-icon{font-size:18px;flex-shrink:0;}
 .plan-row-info{flex:1;min-width:0;}
 .plan-row-titulo{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -477,21 +490,24 @@ textarea.form-input{resize:vertical;}
   </div>
 
   <!-- TAREAS -->
-  <div class="content" id="tab-tareas" style="display:none;padding:0">
+  <div class="content" id="tab-tareas" style="display:none;padding:0;flex-direction:column">
     <div class="tareas-layout">
-      <div class="tareas-header">
+      <div class="tareas-header-wrap">
         <div>
-          <div class="page-title" style="font-size:18px">Tareas</div>
+          <div class="page-title" style="font-size:17px">Tareas del equipo</div>
           <div style="font-size:13px;color:var(--gray-400);margin-top:2px" id="tareasSubtitle">Todas las tareas</div>
         </div>
         <button class="btn btn-primary" onclick="openTareaPanel()">+ Nueva tarea</button>
       </div>
-      <div class="tareas-filters" id="tareasFilters">
-        <button class="plan-filter-chip active" onclick="setTareaFilter('todas',this)">Todas</button>
-        <button class="plan-filter-chip" onclick="setTareaFilter('en-curso',this)">En curso</button>
-        <button class="plan-filter-chip" onclick="setTareaFilter('atrasado',this)">Atrasado</button>
-        <button class="plan-filter-chip" onclick="setTareaFilter('terminado',this)">Terminado</button>
-        <button class="plan-filter-chip" onclick="setTareaFilter('pendiente',this)">Pendiente</button>
+      <div class="tareas-filters-wrap">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 20px;flex-wrap:wrap;" id="tareasFilters">
+          <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em">Estado:</span>
+          <button class="plan-filter-chip active" onclick="setTareaFilter('todas',this)">Todas</button>
+          <button class="plan-filter-chip" onclick="setTareaFilter('en-curso',this)">En curso</button>
+          <button class="plan-filter-chip" onclick="setTareaFilter('atrasado',this)">Atrasado</button>
+          <button class="plan-filter-chip" onclick="setTareaFilter('pendiente',this)">Pendiente</button>
+          <button class="plan-filter-chip" onclick="setTareaFilter('terminado',this)">Terminado</button>
+        </div>
       </div>
       <div id="tareasContent"><div class="spinner" style="margin:40px auto"></div></div>
     </div>
@@ -1607,20 +1623,28 @@ function renderTareas(){
     const items=groups[g];if(!items.length)return;
     items.sort((a,b)=>TAREA_PR_ORDER[a.prioridad]-TAREA_PR_ORDER[b.prioridad]);
     html+=`<div class="tarea-group-title">${groupLabels[g]} <span style="font-weight:400;color:var(--gray-400)">(${items.length})</span></div>`;
-    html+=items.map(t=>`
-      <div class="tarea-row" onclick="openTareaPanel(${JSON.stringify(t).replace(/"/g,'&quot;')})">
-        <div class="tarea-check ${t.estado}" onclick="event.stopPropagation();cycleEstado('${t.id}','${t.estado}')"></div>
+    html+=items.map(t=>{
+      const initials=t.empleados?t.empleados.nombre.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase():'';
+      const estados=['pendiente','en-curso','atrasado','terminado'];
+      const estadoLabels={pendiente:'Pendiente','en-curso':'En curso',atrasado:'Atrasado',terminado:'Terminado'};
+      const estadoBtns=estados.map(e=>`<button class="estado-btn estado-btn-${e} ${t.estado===e?'active':''}" onclick="event.stopPropagation();setTareaEstado('${t.id}','${e}')">${estadoLabels[e]}</button>`).join('');
+      return`<div class="tarea-row" onclick="openTareaPanel(${JSON.stringify(t).replace(/"/g,'&quot;')})">
         <div class="tarea-body">
-          <div class="tarea-titulo ${t.estado==='terminado'?'terminado':''}">${esc(t.titulo)}</div>
-          ${t.descripcion?`<div class="tarea-desc">${esc(t.descripcion)}</div>`:''}
-          <div class="tarea-meta">
-            <span class="${PR_CLS[t.prioridad]||'pr-media'}">${PR_LABEL[t.prioridad]||'Media'}</span>
-            ${t.empleados?`<span class="resp-chip"><span class="resp-av">${t.empleados.nombre.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}</span>${esc(t.empleados.nombre)}</span>`:''}
-            ${t.clientes?`<span style="font-size:12px;color:var(--gray-400)">· ${esc(t.clientes.empresa)}</span>`:''}
-            ${t.fecha_entrega?`<span style="font-size:12px;color:${isOverdue(t.fecha_entrega)&&t.estado!=='terminado'?'var(--red)':'var(--gray-400)'}">${isOverdue(t.fecha_entrega)&&t.estado!=='terminado'?'⚠️ ':''}${formatDate(t.fecha_entrega)}</span>`:''}
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%">
+            <div style="flex:1;min-width:0">
+              <div class="tarea-titulo ${t.estado==='terminado'?'terminado':''}">${esc(t.titulo)}</div>
+              ${t.descripcion?`<div class="tarea-desc">${esc(t.descripcion)}</div>`:''}
+              <div class="tarea-meta" style="margin-top:6px">
+                <span class="${PR_CLS[t.prioridad]||'pr-media'}">${PR_LABEL[t.prioridad]||'Media'}</span>
+                ${t.empleados?`<span class="resp-chip"><span class="resp-av">${initials}</span>${esc(t.empleados.nombre)}</span>`:''}
+                ${t.clientes?`<span style="font-size:12px;color:var(--gray-400)">· ${esc(t.clientes.empresa)}</span>`:''}
+                ${t.fecha_entrega?`<span style="font-size:12px;color:${isOverdue(t.fecha_entrega)&&t.estado!=='terminado'?'var(--red)':'var(--gray-400)'}">${isOverdue(t.fecha_entrega)&&t.estado!=='terminado'?'⚠️ ':''}${formatDate(t.fecha_entrega)}</span>`:''}
+              </div>
+            </div>
+            <div class="estado-btns" onclick="event.stopPropagation()">${estadoBtns}</div>
           </div>
         </div>
-      </div>`).join('');
+      </div>`;}).join('');
   });
   area.innerHTML=html;
 }
@@ -1630,6 +1654,11 @@ function isOverdue(fecha){if(!fecha)return false;return new Date(fecha+'T23:59:5
 async function cycleEstado(id,estadoActual){
   const cycle={pendiente:'en-curso','en-curso':'atrasado',atrasado:'terminado',terminado:'pendiente'};
   const nuevoEstado=cycle[estadoActual]||'en-curso';
+  await db.from('tareas').update({estado:nuevoEstado}).eq('id',id);
+  await loadTareas();
+}
+
+async function setTareaEstado(id,nuevoEstado){
   await db.from('tareas').update({estado:nuevoEstado}).eq('id',id);
   await loadTareas();
 }
@@ -1684,7 +1713,7 @@ function renderPlanListNew(){
     area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div class="empty-title">Sin piezas</div><div class="empty-sub">Agrega reels, posts o carruseles.</div><button class="btn btn-primary" onclick="openPlanPanel()">+ Nueva pieza</button></div></div>`;return;
   }
   const tipIcon={reel:'🎬',post:'🖼️',carrusel:'📑'};
-  area.innerHTML=`<div class="plan-list-wrap">
+  area.innerHTML=`<div>
     ${items.map(c=>`
       <div class="plan-row" onclick="openPlanPanelById('${c.id}')">
         <div class="plan-row-accent ${c.tipo}"></div>
@@ -1704,6 +1733,7 @@ function renderPlanListNew(){
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar pieza
     </div>
   </div>`;
+
 }
 
 function renderDialListNew(){
@@ -1721,7 +1751,7 @@ function renderDialListNew(){
   if(!items.length){
     area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div><div class="empty-title">Sin diálogos</div><div class="empty-sub">Crea el guión para cada reel.</div><button class="btn btn-primary" onclick="openDialPanel()">+ Nuevo diálogo</button></div></div>`;return;
   }
-  area.innerHTML=`<div class="plan-list-wrap">
+  area.innerHTML=`<div>
     ${items.map(c=>`
       <div class="plan-row" onclick="openDialPanelById('${c.id}')">
         <div class="plan-row-accent dialogo"></div>
