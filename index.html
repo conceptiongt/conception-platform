@@ -208,6 +208,11 @@ textarea.form-input{resize:vertical;}
 .claude-result-actions{display:flex;gap:8px;margin-top:10px;}
 .btn-use{background:var(--green);color:#fff;font-size:12px;padding:6px 14px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;}
 .btn-use:hover{opacity:.9;}
+/* INNER TABS */
+.inner-tabs{display:flex;gap:0;border-bottom:2px solid var(--gray-100);padding:0 24px;background:#fff;flex-shrink:0;}
+.inner-tab{padding:12px 20px;font-size:13.5px;font-weight:500;color:var(--gray-400);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+.inner-tab:hover{color:var(--black);}
+.inner-tab.active{color:var(--black);border-bottom-color:var(--black);}
 /* NO SELECTION */
 .no-selection{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--gray-400);gap:12px;}
 .no-selection svg{width:40px;height:40px;}
@@ -249,13 +254,25 @@ textarea.form-input{resize:vertical;}
 .lightbox-close:hover{opacity:1;}
 /* POST 4:5 */
 .media-post-frame{width:100%;aspect-ratio:4/5;background:#000;border-radius:var(--rs);overflow:hidden;cursor:pointer;margin-top:8px;}
-.media-post-frame img{width:100%;height:100%;object-fit:cover;}
+.media-post-frame img{width:100%;height:100%;object-fit:cover;display:block;}
 /* REEL 9:16 */
 .media-reel-frame{width:60%;margin:8px auto 0;aspect-ratio:9/16;background:#000;border-radius:var(--rs);overflow:hidden;cursor:pointer;}
-.media-reel-frame video{width:100%;height:100%;object-fit:cover;}
+.media-reel-frame video{width:100%;height:100%;object-fit:cover;display:block;}
 /* CARRUSEL */
 .media-carrusel-frame{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:8px;}
 .media-carrusel-frame img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:var(--rs);cursor:pointer;}
+/* CARRUSEL SLIDER */
+.carrusel-slider{position:relative;width:100%;aspect-ratio:4/5;background:#000;border-radius:var(--rs);overflow:hidden;margin-top:8px;}
+.carrusel-slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s;}
+.carrusel-slider img.active{opacity:1;}
+.carrusel-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;background:rgba(0,0,0,.55);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;border:none;color:#fff;font-size:16px;transition:background .15s;}
+.carrusel-arrow:hover{background:rgba(0,0,0,.8);}
+.carrusel-prev{left:10px;}
+.carrusel-next{right:10px;}
+.carrusel-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;}
+.carrusel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:background .2s;}
+.carrusel-dot.active{background:#fff;}
+.carrusel-counter{position:absolute;top:10px;right:12px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
 /* CLIENTE COMENTARIO EN INTERNAL */
 .cliente-feedback{margin-top:10px;padding:10px 14px;background:var(--red-light);border-left:3px solid var(--red);border-radius:var(--rs);}
 .cliente-feedback-label{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
@@ -725,6 +742,10 @@ function renderPlanMain(){
       ${allMeses.map(m=>`<button class="mes-tab ${m.id===activeMesId?'active':''}" onclick="selectMes('${m.id}')">${esc(m.nombre)}</button>`).join('')}
       <button class="mes-tab-add" onclick="openModal('modalMes')">+ Nuevo mes</button>
     </div>
+    <div class="inner-tabs">
+      <div class="inner-tab active" id="itab-contenido" onclick="switchInnerTab('contenido')">Contenido</div>
+      <div class="inner-tab" id="itab-dialogos" onclick="switchInnerTab('dialogos')">Diálogos</div>
+    </div>
     <div class="contenido-area" id="contenidoArea">
       ${activeMesId?'<div class="spinner" style="margin:40px auto"></div>':`
         <div class="empty-state">
@@ -734,13 +755,13 @@ function renderPlanMain(){
           <button class="btn btn-primary" onclick="openModal('modalMes')">+ Crear carpeta de mes</button>
         </div>`}
     </div>`;
-  if(activeMesId)renderContenidoArea();
+  if(activeMesId){activeInnerTab==='contenido'?renderContenidoArea():renderDialogosArea();}
 
   // Realtime subscription
   if(window._realtimeSub){db.removeChannel(window._realtimeSub);}
   if(activeMesId){
     window._realtimeSub=db.channel('contenido-changes').on('postgres_changes',{event:'*',schema:'public',table:'contenido',filter:`mes_id=eq.${activeMesId}`},()=>{
-      loadContenido(activeMesId).then(()=>renderContenidoArea());
+      loadContenido(activeMesId).then(()=>activeInnerTab==='contenido'?renderContenidoArea():renderDialogosArea());
     }).subscribe();
   }
 }
@@ -749,7 +770,7 @@ async function selectMes(mesId){
   activeMesId=mesId;
   renderPlanMain();
   await loadContenido(mesId);
-  renderContenidoArea();
+  activeInnerTab==='contenido'?renderContenidoArea():renderDialogosArea();
 }
 
 const TIPO_ICON={reel:'🎬',post:'🖼️',carrusel:'📑'};
@@ -955,6 +976,49 @@ async function saveContenido(){
   renderContenidoArea();
 }
 
+let activeInnerTab='contenido';
+
+function switchInnerTab(tab){
+  activeInnerTab=tab;
+  document.querySelectorAll('.inner-tab').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('itab-'+tab);
+  if(el)el.classList.add('active');
+  if(tab==='contenido')renderContenidoArea();
+  else renderDialogosArea();
+}
+
+function renderDialogosArea(){
+  const area=document.getElementById('contenidoArea');
+  if(!area)return;
+  const reels=allContenido.filter(c=>c.tipo==='reel');
+  if(!reels.length){
+    area.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></div><div class="empty-title">Sin diálogos registrados</div><div class="empty-sub">Los diálogos se agregan al crear o editar un Reel.</div><button class="btn btn-primary" onclick="openPiezaPanel(null,'reel')">+ Nuevo Reel</button></div>`;
+    return;
+  }
+  area.innerHTML=`<div style="display:flex;flex-direction:column;gap:16px">
+    ${reels.map((c,i)=>`
+      <div style="background:#fff;border:1px solid var(--gray-100);border-radius:var(--r);overflow:hidden">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;background:var(--gray-50)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="tipo-icon tipo-reel">🎬</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:600">${c.tema?esc(c.tema):'Reel #'+(i+1)}</div>
+              <div style="font-size:11.5px;color:var(--gray-400);margin-top:2px">Reel #${i+1}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="ap-badge ${AP_CLS[c.estado_aprobacion]||'ap-pendiente'}">${AP_LBL[c.estado_aprobacion]||'Pendiente'}</span>
+            <button class="icon-btn" onclick="openPiezaPanelById('${c.id}')"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg></button>
+          </div>
+        </div>
+        <div style="padding:18px">
+          ${c.dialogos?`<div style="font-size:13.5px;line-height:1.8;color:var(--gray-800);white-space:pre-wrap;font-family:'DM Sans',sans-serif">${esc(c.dialogos)}</div>`:`<div style="font-size:13px;color:var(--gray-300);font-style:italic">Sin diálogos registrados para este reel.</div>`}
+          ${c.estado_aprobacion==='cambios'&&c.comentario_cliente?`<div class="cliente-feedback" style="margin-top:14px"><div class="cliente-feedback-label">💬 Comentario del cliente</div><div class="cliente-feedback-text">"${esc(c.comentario_cliente)}"</div></div>`:''}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
 async function deleteContenido(id){
   if(!confirm('¿Eliminar esta pieza?'))return;
   await db.from('contenido').delete().eq('id',id);
@@ -1020,9 +1084,14 @@ async function loadAprobacion(clienteId,mesId){
   function mediaBlock(p){
     const urls=p.media_urls||[];
     if(!urls.length)return'';
-    if(p.tipo==='reel')return`<div class="aprob-media"><div class="aprob-media-label">Video — toca para ver completo</div><div class="media-reel-frame" onclick="openLightbox('video','${urls[0]}')"><video src="${urls[0]}" controls></video></div></div>`;
-    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ver completa</div><div class="media-post-frame" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" alt="post"></div></div>`;
-    if(p.tipo==='carrusel')return`<div class="aprob-media"><div class="aprob-media-label">Imágenes del carrusel (${urls.length}) — toca cada imagen para ampliar</div><div class="media-carrusel-frame">${urls.map(u=>`<img src="${u}" alt="" onclick="openLightbox('img','${u}')">`).join('')}</div></div>`;
+    const pid=p.id.replace(/-/g,'');
+    if(p.tipo==='reel')return`<div class="aprob-media"><div class="aprob-media-label">Video — toca para ver en pantalla completa</div><div class="media-reel-frame" style="cursor:pointer" onclick="openLightbox('video','${urls[0]}')"><video src="${urls[0]}" style="width:100%;height:100%;object-fit:cover;display:block"></video></div></div>`;
+    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ampliar</div><div class="media-post-frame" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" alt="post" style="width:100%;height:100%;object-fit:cover;display:block"></div></div>`;
+    if(p.tipo==='carrusel'){
+      const slides=urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" onclick="openLightbox('img','${u}')">`).join('');
+      const dots=urls.map((_,i)=>`<div class="carrusel-dot ${i===0?'active':''}" onclick="goSlide('${pid}',${i})"></div>`).join('');
+      return`<div class="aprob-media"><div class="aprob-media-label">Carrusel (${urls.length} imágenes) — usa las flechas para navegar</div><div class="carrusel-slider" id="cs-${pid}">${slides}<button class="carrusel-arrow carrusel-prev" onclick="prevSlide('${pid}')">‹</button><button class="carrusel-arrow carrusel-next" onclick="nextSlide('${pid}')">›</button><div class="carrusel-dots">${dots}</div><div class="carrusel-counter" id="cc-${pid}">1 / ${urls.length}</div></div></div>`;
+    }
     return'';
   }
 
@@ -1125,6 +1194,32 @@ async function guardarAprob(piezaId,estadoOverride){
 // ── UTILS ──
 function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,isError=false){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast'+(isError?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+// ── CAROUSEL SLIDER ──
+const sliderState={};
+function initSlider(pid,total){sliderState[pid]={cur:0,total};}
+function goSlide(pid,idx){
+  const cs=document.getElementById('cs-'+pid);if(!cs)return;
+  const imgs=cs.querySelectorAll('img');
+  const dots=cs.querySelectorAll('.carrusel-dot');
+  const counter=document.getElementById('cc-'+pid);
+  imgs.forEach((img,i)=>img.classList.toggle('active',i===idx));
+  dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+  if(counter)counter.textContent=(idx+1)+' / '+imgs.length;
+  sliderState[pid]={cur:idx,total:imgs.length};
+}
+function nextSlide(pid){
+  const cs=document.getElementById('cs-'+pid);if(!cs)return;
+  const imgs=cs.querySelectorAll('img');
+  const cur=sliderState[pid]?.cur||0;
+  goSlide(pid,(cur+1)%imgs.length);
+}
+function prevSlide(pid){
+  const cs=document.getElementById('cs-'+pid);if(!cs)return;
+  const imgs=cs.querySelectorAll('img');
+  const cur=sliderState[pid]?.cur||0;
+  goSlide(pid,(cur-1+imgs.length)%imgs.length);
+}
 
 // ── LIGHTBOX ──
 function openLightbox(type,src){
