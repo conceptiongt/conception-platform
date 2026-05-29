@@ -25,10 +25,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--blac
 .nav-icon{width:16px;height:16px;opacity:.7;flex-shrink:0;}
 .nav-item.active .nav-icon{opacity:1;}
 .sb-footer{padding:20px 12px 0;border-top:1px solid rgba(255,255,255,.08);}
-.user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);background:rgba(255,255,255,.06);}
+.user-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);background:rgba(255,255,255,.06);cursor:pointer;transition:background .15s;position:relative;}
+.user-pill:hover{background:rgba(255,255,255,.1);}
 .user-av{width:28px;height:28px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;}
 .user-name{color:#fff;font-size:12.5px;font-weight:500;}
 .user-role{color:rgba(255,255,255,.35);font-size:11px;}
+.user-selector{position:absolute;bottom:110%;left:0;right:0;background:#1a1a1a;border-radius:var(--rs);padding:6px;display:none;z-index:200;box-shadow:0 -8px 24px rgba(0,0,0,.4);}
+.user-selector.open{display:block;}
+.user-selector-item{padding:8px 12px;border-radius:4px;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:8px;}
+.user-selector-item:hover{background:rgba(255,255,255,.08);}
+.user-selector-item.active{background:rgba(255,255,255,.12);}
+.user-selector-av{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;}
+.user-selector-name{color:#fff;font-size:12.5px;font-weight:500;}
+.user-selector-puesto{color:rgba(255,255,255,.4);font-size:11px;}
 /* MAIN */
 .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;}
 .topbar{background:#fff;border-bottom:1px solid var(--gray-100);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:50;}
@@ -188,7 +197,7 @@ textarea.form-input{resize:vertical;}
 .upload-zone-sub{font-size:11.5px;color:var(--gray-300);margin-top:4px;}
 .upload-progress{height:4px;background:var(--gray-100);border-radius:2px;margin-top:10px;overflow:hidden;display:none;}
 .upload-progress-bar{height:100%;background:var(--black);border-radius:2px;transition:width .3s;}
-.media-post-frame{width:100%;aspect-ratio:4/5;background:#000;border-radius:var(--rs);overflow:hidden;cursor:pointer;margin-top:8px;}
+.media-post-frame{width:100%;aspect-ratio:4/5;background:var(--gray-100);border-radius:var(--rs);overflow:hidden;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;}
 .media-post-frame img{width:100%;height:100%;object-fit:cover;display:block;}
 .media-reel-frame{width:55%;margin:8px auto 0;aspect-ratio:9/16;background:#000;border-radius:var(--rs);overflow:hidden;}
 .media-reel-frame video{width:100%;height:100%;object-fit:cover;display:block;}
@@ -241,7 +250,7 @@ textarea.form-input{resize:vertical;}
 .aprob-media{margin-top:16px;}
 .aprob-media-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
 .aprob-media video{width:100%;border-radius:var(--rs);}
-.aprob-media img{width:100%;max-height:360px;object-fit:cover;border-radius:var(--rs);}
+.aprob-media img{width:100%;height:100%;object-fit:cover;border-radius:var(--rs);display:block;}
 .carrusel-slider{position:relative;width:100%;aspect-ratio:4/5;background:#000;border-radius:var(--rs);overflow:hidden;margin-top:8px;}
 .carrusel-slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s;}
 .carrusel-slider img.active{opacity:1;}
@@ -271,6 +280,55 @@ textarea.form-input{resize:vertical;}
 .cliente-feedback{margin-top:10px;padding:10px 14px;background:var(--red-light);border-left:3px solid var(--red);border-radius:var(--rs);}
 .cliente-feedback-label{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
 .cliente-feedback-text{font-size:13px;color:var(--red);font-style:italic;}
+/* TAREAS */
+.tareas-layout{padding:24px;max-width:900px;}
+.tareas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.tareas-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.tarea-row{background:#fff;border:1px solid var(--gray-100);border-radius:var(--rs);padding:14px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .15s;}
+.tarea-row:hover{box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.tarea-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--gray-200);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;cursor:pointer;transition:all .15s;}
+.tarea-check.en-curso{border-color:var(--blue);background:var(--blue-light);}
+.tarea-check.atrasado{border-color:var(--red);background:var(--red-light);}
+.tarea-check.terminado{border-color:var(--green);background:var(--green);}
+.tarea-check.terminado::after{content:'✓';font-size:11px;font-weight:700;color:#fff;}
+.tarea-body{flex:1;min-width:0;}
+.tarea-titulo{font-size:14px;font-weight:500;margin-bottom:4px;}
+.tarea-titulo.terminado{text-decoration:line-through;color:var(--gray-400);}
+.tarea-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.tarea-desc{font-size:12.5px;color:var(--gray-400);margin-bottom:6px;line-height:1.5;}
+.tarea-group-title{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;padding:16px 0 8px;border-bottom:1px solid var(--gray-100);margin-bottom:12px;}
+/* MES HEADER INFO */
+.mes-info-bar{padding:12px 24px;background:var(--gray-50);border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:24px;flex-shrink:0;flex-wrap:wrap;}
+.mes-info-item{display:flex;align-items:center;gap:8px;}
+.mes-info-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;}
+.mes-info-val{font-size:13px;color:var(--black);font-weight:500;}
+.mes-info-input{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--black);font-weight:500;outline:none;cursor:pointer;padding:2px 4px;border-radius:4px;transition:background .15s;}
+.mes-info-input:hover{background:var(--gray-100);}
+.mes-info-input:focus{background:var(--gray-100);}
+.mes-info-select{border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--black);font-weight:500;outline:none;cursor:pointer;padding:2px 4px;border-radius:4px;appearance:none;transition:background .15s;}
+.mes-info-select:hover{background:var(--gray-100);}
+/* PLAN REDESIGN */
+.plan-area{flex:1;overflow-y:auto;background:var(--gray-50);}
+.plan-list-wrap{padding:20px 24px;}
+.plan-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.plan-section-label{font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;}
+.plan-row{background:#fff;border:1px solid var(--gray-100);border-radius:var(--rs);padding:0;margin-bottom:8px;display:flex;align-items:stretch;overflow:hidden;cursor:pointer;transition:all .15s;}
+.plan-row:hover{box-shadow:0 2px 10px rgba(0,0,0,.07);border-color:var(--gray-200);}
+.plan-row-accent{width:4px;flex-shrink:0;}
+.plan-row-accent.reel{background:#9d174d;}
+.plan-row-accent.post{background:#1e40af;}
+.plan-row-accent.carrusel{background:#065f46;}
+.plan-row-accent.dialogo{background:var(--purple);}
+.plan-row-body{flex:1;padding:12px 16px;display:flex;align-items:center;gap:12px;min-width:0;}
+.plan-row-icon{font-size:18px;flex-shrink:0;}
+.plan-row-info{flex:1;min-width:0;}
+.plan-row-titulo{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.plan-row-sub{font-size:12px;color:var(--gray-400);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.plan-row-badges{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.plan-filter-bar{display:flex;align-items:center;gap:8px;padding:12px 24px;background:#fff;border-bottom:1px solid var(--gray-100);flex-wrap:wrap;flex-shrink:0;}
+.plan-filter-chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--gray-200);background:#fff;color:var(--gray-600);}
+.plan-filter-chip:hover{border-color:var(--gray-400);color:var(--black);}
+.plan-filter-chip.active{background:var(--black);color:#fff;border-color:var(--black);}
 /* NO SELECTION */
 .no-selection{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--gray-400);gap:12px;}
 .no-selection svg{width:40px;height:40px;}
@@ -332,14 +390,19 @@ textarea.form-input{resize:vertical;}
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6M9 19H5m4 0h6m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0h4m-4 0H9"/></svg>Reportes
     </button>
     <div class="nav-label" style="margin-top:8px">Equipo</div>
+    <button class="nav-item" onclick="switchTab('tareas')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Tareas
+    </button>
     <button class="nav-item" onclick="switchTab('empleados')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20H3m14 0a2 2 0 002-2v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1a2 2 0 002 2m10 0H3M10 10a4 4 0 100-8 4 4 0 000 8z"/></svg>Empleados
     </button>
   </nav>
   <div class="sb-footer">
-    <div class="user-pill">
-      <div class="user-av">A</div>
-      <div><div class="user-name">Alejandra</div><div class="user-role">Administrador</div></div>
+    <div class="user-pill" onclick="toggleUserSelector()">
+      <div class="user-av" id="currentUserAv">?</div>
+      <div style="flex:1;min-width:0"><div class="user-name" id="currentUserName">Seleccionar usuario</div><div class="user-role" id="currentUserRole">Toca para cambiar</div></div>
+      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><path d="M5 15l7-7 7 7" transform="rotate(180 10 10)"/></svg>
+      <div class="user-selector" id="userSelector"></div>
     </div>
   </div>
 </aside>
@@ -410,6 +473,27 @@ textarea.form-input{resize:vertical;}
       <div class="plan-main" id="dialMain">
         <div class="no-selection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><p>Selecciona un cliente</p></div>
       </div>
+    </div>
+  </div>
+
+  <!-- TAREAS -->
+  <div class="content" id="tab-tareas" style="display:none;padding:0">
+    <div class="tareas-layout">
+      <div class="tareas-header">
+        <div>
+          <div class="page-title" style="font-size:18px">Tareas</div>
+          <div style="font-size:13px;color:var(--gray-400);margin-top:2px" id="tareasSubtitle">Todas las tareas</div>
+        </div>
+        <button class="btn btn-primary" onclick="openTareaPanel()">+ Nueva tarea</button>
+      </div>
+      <div class="tareas-filters" id="tareasFilters">
+        <button class="plan-filter-chip active" onclick="setTareaFilter('todas',this)">Todas</button>
+        <button class="plan-filter-chip" onclick="setTareaFilter('en-curso',this)">En curso</button>
+        <button class="plan-filter-chip" onclick="setTareaFilter('atrasado',this)">Atrasado</button>
+        <button class="plan-filter-chip" onclick="setTareaFilter('terminado',this)">Terminado</button>
+        <button class="plan-filter-chip" onclick="setTareaFilter('pendiente',this)">Pendiente</button>
+      </div>
+      <div id="tareasContent"><div class="spinner" style="margin:40px auto"></div></div>
     </div>
   </div>
 
@@ -527,16 +611,8 @@ textarea.form-input{resize:vertical;}
       <div class="panel-section-title">Tema / título</div>
       <input class="form-input" type="text" id="pp-tema" placeholder="Ej. Beneficios del servicio X…">
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div>
-        <div class="panel-section-title">Responsable</div>
-        <select class="form-select" id="pp-responsable"><option value="">Sin asignar</option></select>
-      </div>
-      <div>
-        <div class="panel-section-title">Fecha de entrega</div>
-        <input class="form-input" type="date" id="pp-fecha">
-      </div>
-    </div>
+    <input type="hidden" id="pp-responsable" value="">
+    <input type="hidden" id="pp-fecha" value="">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div>
         <div class="panel-section-title">Prioridad</div>
@@ -595,6 +671,62 @@ textarea.form-input{resize:vertical;}
   </div>
 </div>
 
+<!-- PANEL TAREA -->
+<div class="panel-overlay" id="tareaPanelOverlay" onclick="closeTareaPanel()"></div>
+<div class="panel" id="tareaPanel">
+  <div class="panel-head">
+    <div><div class="panel-title" id="tareaPanelTitle">Nueva tarea</div><div class="panel-sub">Asigna y organiza el trabajo del equipo</div></div>
+    <button class="modal-close" onclick="closeTareaPanel()">×</button>
+  </div>
+  <div class="panel-body">
+    <div>
+      <div class="panel-section-title">Título de la tarea *</div>
+      <input class="form-input" type="text" id="tr-titulo" placeholder="Ej. Diseñar post para campaña de junio…">
+    </div>
+    <div>
+      <div class="panel-section-title">Descripción</div>
+      <textarea class="form-input" id="tr-desc" rows="3" placeholder="Detalles adicionales, instrucciones…"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div>
+        <div class="panel-section-title">Asignado a</div>
+        <select class="form-select" id="tr-empleado"><option value="">Sin asignar</option></select>
+      </div>
+      <div>
+        <div class="panel-section-title">Cliente relacionado</div>
+        <select class="form-select" id="tr-cliente"><option value="">Sin cliente</option></select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div>
+        <div class="panel-section-title">Prioridad</div>
+        <select class="form-select" id="tr-prioridad">
+          <option value="alta">Alta</option>
+          <option value="media" selected>Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
+      <div>
+        <div class="panel-section-title">Estado</div>
+        <select class="form-select" id="tr-estado">
+          <option value="pendiente">Pendiente</option>
+          <option value="en-curso">En curso</option>
+          <option value="atrasado">Atrasado</option>
+          <option value="terminado">Terminado</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <div class="panel-section-title">Fecha de entrega</div>
+      <input class="form-input" type="date" id="tr-fecha">
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button class="btn btn-ghost" onclick="closeTareaPanel()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveTarea()">Guardar tarea</button>
+  </div>
+</div>
+
 <!-- PANEL DIÁLOGO -->
 <div class="panel-overlay" id="dialPanelOverlay" onclick="closeDialPanel()"></div>
 <div class="panel" id="dialPanel">
@@ -607,16 +739,8 @@ textarea.form-input{resize:vertical;}
       <div class="panel-section-title">Tema del reel</div>
       <input class="form-input" type="text" id="dp-tema" placeholder="Ej. Beneficios del servicio X…">
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div>
-        <div class="panel-section-title">Responsable</div>
-        <select class="form-select" id="dp-responsable"><option value="">Sin asignar</option></select>
-      </div>
-      <div>
-        <div class="panel-section-title">Fecha de entrega</div>
-        <input class="form-input" type="date" id="dp-fecha">
-      </div>
-    </div>
+    <input type="hidden" id="dp-responsable" value="">
+    <input type="hidden" id="dp-fecha" value="">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div>
         <div class="panel-section-title">Prioridad</div>
@@ -682,29 +806,27 @@ function openSidebar(){document.getElementById('sidebar').classList.add('open');
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('backdrop').classList.remove('open');}
 
 // ── TABS ──
-const ALL_TABS=['clientes','planificacion','dialogos','reportes','empleados'];
+const ALL_TABS=['clientes','planificacion','dialogos','reportes','tareas','empleados'];
 function switchTab(tab){
   ALL_TABS.forEach(t=>{
     const el=document.getElementById('tab-'+t);
     if(el)el.style.display=t===tab?(t==='planificacion'||t==='dialogos'?'flex':''):'none';
   });
   document.querySelectorAll('.nav-item').forEach((el,i)=>{
-    el.classList.toggle('active',['clientes','planificacion','dialogos','reportes','empleados'][i]===tab);
+    el.classList.toggle('active',['clientes','planificacion','dialogos','reportes','tareas','empleados'][i]===tab);
   });
-  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes',empleados:'Empleados'};
+  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes',tareas:'Tareas',empleados:'Empleados'};
   document.getElementById('pageTitle').textContent=titles[tab]||tab;
   const pc=document.getElementById('pageCount');
   const sw=document.getElementById('searchWrap');
   const bp=document.getElementById('btnPrimary');
   pc.style.display='none'; sw.style.display='none'; bp.style.display='none';
-  if(tab==='clientes'){
-    pc.style.display='';sw.style.display='';bp.style.display='';
-    bp.textContent='+ Nuevo cliente';bp.onclick=openClienteModal;
-  }
+  if(tab==='clientes'){pc.style.display='';sw.style.display='';bp.style.display='';bp.textContent='+ Nuevo cliente';bp.onclick=openClienteModal;}
   if(tab==='empleados'){bp.style.display='';bp.textContent='+ Nuevo empleado';bp.onclick=()=>openEmpleadoModal();}
   if(tab==='planificacion')renderPlanClienteList();
   if(tab==='dialogos')renderDialClienteList();
   if(tab==='empleados')loadEmpleados();
+  if(tab==='tareas')loadTareas();
   closeSidebar();
 }
 
@@ -813,8 +935,69 @@ function renderEmpleadosTable(){
   tbody.innerHTML=allEmpleados.map(e=>`<tr onclick="openEmpleadoModalById('${e.id}')"><td><div style="font-weight:600">${esc(e.nombre)}</div></td><td class="td-contact">${esc(e.puesto)||'—'}</td><td class="td-contact">${esc(e.email)||'—'}</td><td><span class="badge ${e.activo!==false?'badge-vigente':'badge-terminado'}"><span class="badge-dot"></span>${e.activo!==false?'Activo':'Inactivo'}</span></td><td onclick="event.stopPropagation()"><div class="row-actions"><button class="icon-btn" onclick="openEmpleadoModalById('${e.id}')"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg></button><button class="icon-btn del" onclick="deleteEmpleado('${e.id}')"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h2M4 5h12M6 5v11a2 2 0 002 2h4a2 2 0 002-2V5"/></svg></button></div></td></tr>`).join('');
 }
 function populateResponsableSelects(){
-  const opts='<option value="">Sin asignar</option>'+allEmpleados.filter(e=>e.activo!==false).map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('');
-  ['pp-responsable','dp-responsable'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  const activos=allEmpleados.filter(e=>e.activo!==false);
+  const opts='<option value="">Sin asignar</option>'+activos.map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('');
+  ['pp-responsable','dp-responsable','tr-empleado'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  // populate clientes in tarea panel
+  const trCliente=document.getElementById('tr-cliente');
+  if(trCliente)trCliente.innerHTML='<option value="">Sin cliente</option>'+allClientes.map(c=>`<option value="${c.id}">${esc(c.empresa)}</option>`).join('');
+  // render user selector
+  renderUserSelector();
+}
+
+// ── USER SELECTOR ──
+let currentUserId=localStorage.getItem('conception_user')||null;
+
+function renderUserSelector(){
+  const sel=document.getElementById('userSelector');
+  if(!sel)return;
+  sel.innerHTML=allEmpleados.filter(e=>e.activo!==false).map(e=>{
+    const initials=e.nombre.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    return`<div class="user-selector-item ${currentUserId===e.id?'active':''}" onclick="selectUser('${e.id}',event)">
+      <div class="user-selector-av">${initials}</div>
+      <div><div class="user-selector-name">${esc(e.nombre)}</div><div class="user-selector-puesto">${esc(e.puesto||'')}</div></div>
+    </div>`;
+  }).join('');
+  updateCurrentUserDisplay();
+}
+
+function updateCurrentUserDisplay(){
+  const u=allEmpleados.find(e=>e.id===currentUserId);
+  const av=document.getElementById('currentUserAv');
+  const name=document.getElementById('currentUserName');
+  const role=document.getElementById('currentUserRole');
+  if(u){
+    const initials=u.nombre.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    if(av)av.textContent=initials;
+    if(name)name.textContent=u.nombre;
+    if(role)role.textContent=u.puesto||'Equipo Conception';
+  }else{
+    if(av)av.textContent='?';
+    if(name)name.textContent='Seleccionar usuario';
+    if(role)role.textContent='Toca para cambiar';
+  }
+}
+
+function selectUser(id,event){
+  event.stopPropagation();
+  currentUserId=id;
+  localStorage.setItem('conception_user',id);
+  renderUserSelector();
+  document.getElementById('userSelector').classList.remove('open');
+  // Refresh tareas to filter by user
+  if(document.getElementById('tab-tareas').style.display!=='none')loadTareas();
+  showToast('Usuario cambiado');
+}
+
+function toggleUserSelector(){
+  const sel=document.getElementById('userSelector');
+  sel.classList.toggle('open');
+  // Close on outside click
+  setTimeout(()=>{
+    document.addEventListener('click',function closeIt(){
+      sel.classList.remove('open');document.removeEventListener('click',closeIt);
+    },{once:true});
+  },10);
 }
 
 // ══ PLANIFICACIÓN ══
@@ -864,18 +1047,49 @@ function renderPlanMain(){
       ${allPlanMeses.map(m=>`<button class="mes-tab ${m.id===activePlanMesId?'active':''}" onclick="selectPlanMes('${m.id}')">${esc(m.nombre)}</button>`).join('')}
       <button class="mes-tab-add" onclick="openMesModal('plan')">+ Nuevo mes</button>
     </div>
-    <div class="list-area" id="planListArea">
-      ${activePlanMesId?'<div class="spinner" style="margin:40px auto"></div>':'<div class="empty-state"><div class="empty-title">Sin mes seleccionado</div><div class="empty-sub">Selecciona o crea una carpeta de mes.</div></div>'}
+    ${activePlanMesId?`
+    <div class="mes-info-bar" id="planMesInfoBar">
+      <div class="mes-info-item">
+        <span class="mes-info-label">Responsable general</span>
+        <select class="mes-info-select" id="plan-mes-resp" onchange="saveMesInfo('${activePlanMesId}','responsable_id',this.value)">
+          <option value="">Sin asignar</option>
+          ${allEmpleados.filter(e=>e.activo!==false).map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="mes-info-item">
+        <span class="mes-info-label">Fecha de entrega</span>
+        <input type="date" class="mes-info-input" id="plan-mes-fecha" onchange="saveMesInfo('${activePlanMesId}','fecha_entrega',this.value)">
+      </div>
+      <div class="mes-info-item" style="flex:1">
+        <span class="mes-info-label">Notas del mes</span>
+        <input type="text" class="mes-info-input" id="plan-mes-notas" placeholder="Observaciones generales…" onblur="saveMesInfo('${activePlanMesId}','notas',this.value)" style="width:100%">
+      </div>
+    </div>
+    <div class="plan-filter-bar">
+      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Estado:</span>
+      <button class="plan-filter-chip active" onclick="setPlanFilter('estado','todos',this)">Todos</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('estado','pendiente',this)">Pendiente</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('estado','proceso',this)">En curso</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('estado','revision',this)">En revisión</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('estado','listo',this)">Listo</button>
+      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-left:8px;margin-right:4px">Prioridad:</span>
+      <button class="plan-filter-chip active" onclick="setPlanFilter('prio','todas',this)">Todas</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('prio','alta',this)">Alta</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('prio','media',this)">Media</button>
+      <button class="plan-filter-chip" onclick="setPlanFilter('prio','baja',this)">Baja</button>
+    </div>`:''}
+    <div class="plan-area" id="planListArea">
+      ${activePlanMesId?'<div class="spinner" style="margin:40px auto"></div>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-400);font-size:14px">Selecciona o crea una carpeta de mes</div>'}
     </div>`;
-  if(activePlanMesId){loadPlanContenido(activePlanMesId).then(()=>renderPlanList());}
+  if(activePlanMesId){loadPlanContenido(activePlanMesId).then(()=>{renderPlanListNew();loadMesInfoPlan(activePlanMesId);});}
   // Realtime
   if(window._planSub)db.removeChannel(window._planSub);
   if(activePlanMesId){
-    window._planSub=db.channel('plan-rt').on('postgres_changes',{event:'*',schema:'public',table:'contenido',filter:`mes_id=eq.${activePlanMesId}`},()=>{loadPlanContenido(activePlanMesId).then(()=>renderPlanList());}).subscribe();
+    window._planSub=db.channel('plan-rt').on('postgres_changes',{event:'*',schema:'public',table:'contenido',filter:`mes_id=eq.${activePlanMesId}`},()=>{loadPlanContenido(activePlanMesId).then(()=>renderPlanListNew());}).subscribe();
   }
 }
 
-async function selectPlanMes(mid){activePlanMesId=mid;renderPlanMain();await loadPlanContenido(mid);renderPlanList();}
+async function selectPlanMes(mid){activePlanMesId=mid;renderPlanMain();await loadPlanContenido(mid);renderPlanListNew();loadMesInfoPlan(mid);}
 
 function renderPlanList(){
   const area=document.getElementById('planListArea');if(!area)return;
@@ -995,7 +1209,7 @@ function renderPlanMediaPreview(){
 
 async function savePlanPieza(){
   if(!activePlanMesId){showToast('Selecciona un mes primero',true);return;}
-  const payload={mes_id:activePlanMesId,cliente_id:activePlanCliente.id,tipo:currentPlanTipo,tema:document.getElementById('pp-tema').value.trim(),copy:document.getElementById('pp-copy').value.trim(),notas_internas:document.getElementById('pp-notas').value.trim(),fecha_entrega:document.getElementById('pp-fecha').value||null,prioridad:document.getElementById('pp-prioridad').value,estado_interno:document.getElementById('pp-estado').value,responsable_id:document.getElementById('pp-responsable').value||null,media_urls:uploadedUrls,media_tipo:currentPlanTipo,dialogos:''};
+  const payload={mes_id:activePlanMesId,cliente_id:activePlanCliente.id,tipo:currentPlanTipo,tema:document.getElementById('pp-tema').value.trim(),copy:document.getElementById('pp-copy').value.trim(),notas_internas:document.getElementById('pp-notas').value.trim(),prioridad:document.getElementById('pp-prioridad').value,estado_interno:document.getElementById('pp-estado').value,media_urls:uploadedUrls,media_tipo:currentPlanTipo,dialogos:''};
   let error;
   if(editingPlanId){({error}=await db.from('contenido').update(payload).eq('id',editingPlanId));}
   else{({error}=await db.from('contenido').insert(payload));}
@@ -1052,17 +1266,48 @@ function renderDialMain(){
       ${allDialMeses.map(m=>`<button class="mes-tab ${m.id===activDialMesId?'active':''}" onclick="selectDialMes('${m.id}')">${esc(m.nombre)}</button>`).join('')}
       <button class="mes-tab-add" onclick="openMesModal('dial')">+ Nuevo mes</button>
     </div>
-    <div class="list-area" id="dialListArea">
-      ${activDialMesId?'<div class="spinner" style="margin:40px auto"></div>':'<div class="empty-state"><div class="empty-title">Sin mes seleccionado</div></div>'}
+    ${activDialMesId?`
+    <div class="mes-info-bar" id="dialMesInfoBar">
+      <div class="mes-info-item">
+        <span class="mes-info-label">Responsable general</span>
+        <select class="mes-info-select" id="dial-mes-resp" onchange="saveMesInfo('${activDialMesId}','responsable_id',this.value)">
+          <option value="">Sin asignar</option>
+          ${allEmpleados.filter(e=>e.activo!==false).map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="mes-info-item">
+        <span class="mes-info-label">Fecha de entrega</span>
+        <input type="date" class="mes-info-input" id="dial-mes-fecha" onchange="saveMesInfo('${activDialMesId}','fecha_entrega',this.value)">
+      </div>
+      <div class="mes-info-item" style="flex:1">
+        <span class="mes-info-label">Notas del mes</span>
+        <input type="text" class="mes-info-input" id="dial-mes-notas" placeholder="Observaciones generales…" onblur="saveMesInfo('${activDialMesId}','notas',this.value)" style="width:100%">
+      </div>
+    </div>
+    <div class="plan-filter-bar">
+      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Estado:</span>
+      <button class="plan-filter-chip active" onclick="setDialFilter('estado','todos',this)">Todos</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('estado','pendiente',this)">Pendiente</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('estado','proceso',this)">En curso</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('estado','revision',this)">En revisión</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('estado','listo',this)">Listo</button>
+      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-left:8px;margin-right:4px">Prioridad:</span>
+      <button class="plan-filter-chip active" onclick="setDialFilter('prio','todas',this)">Todas</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('prio','alta',this)">Alta</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('prio','media',this)">Media</button>
+      <button class="plan-filter-chip" onclick="setDialFilter('prio','baja',this)">Baja</button>
+    </div>`:''}
+    <div class="plan-area" id="dialListArea">
+      ${activDialMesId?'<div class="spinner" style="margin:40px auto"></div>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-400);font-size:14px">Selecciona o crea una carpeta de mes</div>'}
     </div>`;
-  if(activDialMesId){loadDialContenido(activDialMesId).then(()=>renderDialList());}
+  if(activDialMesId){loadDialContenido(activDialMesId).then(()=>{renderDialListNew();loadMesInfoDial(activDialMesId);});}
   if(window._dialSub)db.removeChannel(window._dialSub);
   if(activDialMesId){
-    window._dialSub=db.channel('dial-rt').on('postgres_changes',{event:'*',schema:'public',table:'contenido',filter:`mes_id=eq.${activDialMesId}`},()=>{loadDialContenido(activDialMesId).then(()=>renderDialList());}).subscribe();
+    window._dialSub=db.channel('dial-rt').on('postgres_changes',{event:'*',schema:'public',table:'contenido',filter:`mes_id=eq.${activDialMesId}`},()=>{loadDialContenido(activDialMesId).then(()=>renderDialListNew());}).subscribe();
   }
 }
 
-async function selectDialMes(mid){activDialMesId=mid;renderDialMain();await loadDialContenido(mid);renderDialList();}
+async function selectDialMes(mid){activDialMesId=mid;renderDialMain();await loadDialContenido(mid);renderDialListNew();loadMesInfoDial(mid);}
 
 function renderDialList(){
   const area=document.getElementById('dialListArea');if(!area)return;
@@ -1124,7 +1369,7 @@ function closeDialPanel(){document.getElementById('dialPanelOverlay').classList.
 
 async function saveDialPieza(){
   if(!activDialMesId){showToast('Selecciona un mes primero',true);return;}
-  const payload={mes_id:activDialMesId,cliente_id:activDialCliente.id,tipo:'reel',tema:document.getElementById('dp-tema').value.trim(),dialogos:document.getElementById('dp-dialogos').value.trim(),fecha_entrega:document.getElementById('dp-fecha').value||null,prioridad:document.getElementById('dp-prioridad').value,estado_interno:document.getElementById('dp-estado').value,responsable_id:document.getElementById('dp-responsable').value||null,copy:'',notas_internas:'',media_urls:[],estado_aprobacion:'pendiente'};
+  const payload={mes_id:activDialMesId,cliente_id:activDialCliente.id,tipo:'reel',tema:document.getElementById('dp-tema').value.trim(),dialogos:document.getElementById('dp-dialogos').value.trim(),prioridad:document.getElementById('dp-prioridad').value,estado_interno:document.getElementById('dp-estado').value,copy:'',notas_internas:'',media_urls:[],estado_aprobacion:'pendiente'};
   let error;
   if(editingDialId){({error}=await db.from('contenido').update(payload).eq('id',editingDialId));}
   else{({error}=await db.from('contenido').insert(payload));}
@@ -1185,7 +1430,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
   function mediaBlock(p){
     const urls=p.media_urls||[];if(!urls.length)return'';
     if(p.tipo==='reel')return`<div class="aprob-media"><div class="aprob-media-label">Video</div><div class="media-reel-frame"><video src="${urls[0]}" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;background:#000"></video></div></div>`;
-    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ampliar</div><div class="media-post-frame" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" style="width:100%;height:100%;object-fit:cover;display:block"></div></div>`;
+    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ampliar</div><div class="media-post-frame" style="cursor:pointer" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" alt="post" style="width:100%;height:100%;object-fit:cover;display:block;min-height:100%"></div></div>`;
     if(p.tipo==='carrusel'){
       const pid=p.id.replace(/-/g,'');
       const slides=urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" onclick="openLightbox('img','${u}')">`).join('');
@@ -1274,6 +1519,230 @@ function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;
 function formatDate(d){if(!d)return'—';const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('es-GT',{day:'numeric',month:'short',year:'numeric'});}
 function showToast(msg,isError=false){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast'+(isError?' error':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
+// ── PLAN/DIAL FILTERS ──
+function setPlanFilter(type,val,el){
+  const area=document.getElementById('planListArea');if(!area)return;
+  const group=el.closest('.plan-filter-bar');
+  // deactivate siblings in same group
+  const prefix=type==='estado'?['Todos','Pendiente','En curso','En revisión','Listo']:['Todas','Alta','Media','Baja'];
+  if(group){group.querySelectorAll('.plan-filter-chip').forEach(c=>{if(prefix.includes(c.textContent))c.classList.remove('active');});}
+  el.classList.add('active');
+  if(type==='estado')area.dataset.filterEstado=val;
+  else area.dataset.filterPrio=val;
+  renderPlanListNew();
+}
+function setDialFilter(type,val,el){
+  const area=document.getElementById('dialListArea');if(!area)return;
+  const group=el.closest('.plan-filter-bar');
+  const prefix=type==='estado'?['Todos','Pendiente','En curso','En revisión','Listo']:['Todas','Alta','Media','Baja'];
+  if(group){group.querySelectorAll('.plan-filter-chip').forEach(c=>{if(prefix.includes(c.textContent))c.classList.remove('active');});}
+  el.classList.add('active');
+  if(type==='estado')area.dataset.filterEstado=val;
+  else area.dataset.filterPrio=val;
+  renderDialListNew();
+}
+
+// ── MES INFO LOAD ──
+async function loadMesInfoPlan(mesId){
+  const{data}=await db.from('meses').select('responsable_id,fecha_entrega,notas').eq('id',mesId).single();
+  if(!data)return;
+  const r=document.getElementById('plan-mes-resp');const f=document.getElementById('plan-mes-fecha');const n=document.getElementById('plan-mes-notas');
+  if(r&&data.responsable_id)r.value=data.responsable_id;
+  if(f&&data.fecha_entrega)f.value=data.fecha_entrega;
+  if(n&&data.notas)n.value=data.notas;
+}
+async function loadMesInfoDial(mesId){
+  const{data}=await db.from('meses').select('responsable_id,fecha_entrega,notas').eq('id',mesId).single();
+  if(!data)return;
+  const r=document.getElementById('dial-mes-resp');const f=document.getElementById('dial-mes-fecha');const n=document.getElementById('dial-mes-notas');
+  if(r&&data.responsable_id)r.value=data.responsable_id;
+  if(f&&data.fecha_entrega)f.value=data.fecha_entrega;
+  if(n&&data.notas)n.value=data.notas;
+}
+
+// ── UPDATE savePlanPieza to remove resp/fecha (now on mes level) ──
+
+// ══ TAREAS ══
+let allTareas=[],activeTareaFilter='todas',editingTareaId=null;
+
+async function loadTareas(){
+  let q=db.from('tareas').select('*, empleados(nombre,puesto), clientes(empresa)').order('prioridad').order('created_at',{ascending:false});
+  if(currentUserId)q=q.eq('empleado_id',currentUserId);
+  const{data}=await q;
+  allTareas=data||[];
+  // Update subtitle
+  const sub=document.getElementById('tareasSubtitle');
+  if(sub){
+    const u=allEmpleados.find(e=>e.id===currentUserId);
+    sub.textContent=u?`Tareas de ${u.nombre}`:'Todas las tareas';
+  }
+  renderTareas();
+}
+
+function setTareaFilter(val,el){
+  activeTareaFilter=val;
+  document.querySelectorAll('#tareasFilters .plan-filter-chip').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderTareas();
+}
+
+const TAREA_ESTADO_ORDER={pendiente:0,'en-curso':1,atrasado:2,terminado:3};
+const TAREA_PR_ORDER={alta:0,media:1,baja:2};
+
+function renderTareas(){
+  const area=document.getElementById('tareasContent');if(!area)return;
+  let filtered=allTareas;
+  if(activeTareaFilter!=='todas')filtered=allTareas.filter(t=>t.estado===activeTareaFilter);
+  if(!filtered.length){
+    area.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="empty-title">Sin tareas</div><div class="empty-sub">Agrega la primera tarea del equipo.</div><button class="btn btn-primary" onclick="openTareaPanel()">+ Nueva tarea</button></div>`;
+    return;
+  }
+  // Group by estado
+  const groups={pendiente:[],['en-curso']:[],atrasado:[],terminado:[]};
+  filtered.forEach(t=>{ if(groups[t.estado])groups[t.estado].push(t); else groups.pendiente.push(t); });
+  const groupLabels={pendiente:'Pendiente','en-curso':'En curso',atrasado:'Atrasado ⚠️',terminado:'Terminado'};
+  const groupOrder=['en-curso','atrasado','pendiente','terminado'];
+  let html='';
+  groupOrder.forEach(g=>{
+    const items=groups[g];if(!items.length)return;
+    items.sort((a,b)=>TAREA_PR_ORDER[a.prioridad]-TAREA_PR_ORDER[b.prioridad]);
+    html+=`<div class="tarea-group-title">${groupLabels[g]} <span style="font-weight:400;color:var(--gray-400)">(${items.length})</span></div>`;
+    html+=items.map(t=>`
+      <div class="tarea-row" onclick="openTareaPanel(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+        <div class="tarea-check ${t.estado}" onclick="event.stopPropagation();cycleEstado('${t.id}','${t.estado}')"></div>
+        <div class="tarea-body">
+          <div class="tarea-titulo ${t.estado==='terminado'?'terminado':''}">${esc(t.titulo)}</div>
+          ${t.descripcion?`<div class="tarea-desc">${esc(t.descripcion)}</div>`:''}
+          <div class="tarea-meta">
+            <span class="${PR_CLS[t.prioridad]||'pr-media'}">${PR_LABEL[t.prioridad]||'Media'}</span>
+            ${t.empleados?`<span class="resp-chip"><span class="resp-av">${t.empleados.nombre.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}</span>${esc(t.empleados.nombre)}</span>`:''}
+            ${t.clientes?`<span style="font-size:12px;color:var(--gray-400)">· ${esc(t.clientes.empresa)}</span>`:''}
+            ${t.fecha_entrega?`<span style="font-size:12px;color:${isOverdue(t.fecha_entrega)&&t.estado!=='terminado'?'var(--red)':'var(--gray-400)'}">${isOverdue(t.fecha_entrega)&&t.estado!=='terminado'?'⚠️ ':''}${formatDate(t.fecha_entrega)}</span>`:''}
+          </div>
+        </div>
+      </div>`).join('');
+  });
+  area.innerHTML=html;
+}
+
+function isOverdue(fecha){if(!fecha)return false;return new Date(fecha+'T23:59:59')<new Date();}
+
+async function cycleEstado(id,estadoActual){
+  const cycle={pendiente:'en-curso','en-curso':'atrasado',atrasado:'terminado',terminado:'pendiente'};
+  const nuevoEstado=cycle[estadoActual]||'en-curso';
+  await db.from('tareas').update({estado:nuevoEstado}).eq('id',id);
+  await loadTareas();
+}
+
+function openTareaPanel(tarea=null){
+  editingTareaId=tarea?.id||null;
+  document.getElementById('tareaPanelTitle').textContent=tarea?'Editar tarea':'Nueva tarea';
+  document.getElementById('tr-titulo').value=tarea?.titulo||'';
+  document.getElementById('tr-desc').value=tarea?.descripcion||'';
+  document.getElementById('tr-empleado').value=tarea?.empleado_id||currentUserId||'';
+  document.getElementById('tr-cliente').value=tarea?.cliente_id||'';
+  document.getElementById('tr-prioridad').value=tarea?.prioridad||'media';
+  document.getElementById('tr-estado').value=tarea?.estado||'pendiente';
+  document.getElementById('tr-fecha').value=tarea?.fecha_entrega||'';
+  document.getElementById('tareaPanelOverlay').classList.add('open');
+  document.getElementById('tareaPanel').classList.add('open');
+}
+function closeTareaPanel(){document.getElementById('tareaPanelOverlay').classList.remove('open');document.getElementById('tareaPanel').classList.remove('open');}
+
+async function saveTarea(){
+  const titulo=document.getElementById('tr-titulo').value.trim();
+  if(!titulo){showToast('El título es obligatorio',true);return;}
+  const payload={titulo,descripcion:document.getElementById('tr-desc').value.trim(),empleado_id:document.getElementById('tr-empleado').value||null,cliente_id:document.getElementById('tr-cliente').value||null,prioridad:document.getElementById('tr-prioridad').value,estado:document.getElementById('tr-estado').value,fecha_entrega:document.getElementById('tr-fecha').value||null};
+  let error;
+  if(editingTareaId){({error}=await db.from('tareas').update(payload).eq('id',editingTareaId));}
+  else{({error}=await db.from('tareas').insert(payload));}
+  if(error){showToast('Error: '+error.message,true);return;}
+  showToast(editingTareaId?'Tarea actualizada':'Tarea creada');
+  closeTareaPanel();loadTareas();
+}
+
+// ── MES INFO BAR (fecha y responsable general por mes) ──
+async function saveMesInfo(mesId,field,value){
+  await db.from('meses').update({[field]:value||null}).eq('id',mesId);
+  showToast('Guardado');
+}
+
+// ── PLAN REDESIGN: render with new style ──
+function renderPlanListNew(){
+  const area=document.getElementById('planListArea');if(!area)return;
+  const estadoFilter=area.dataset.filterEstado||'todos';
+  const prioFilter=area.dataset.filterPrio||'todas';
+  let items=allPlanContenido.filter(c=>{
+    const me=estadoFilter==='todos'||c.estado_interno===estadoFilter;
+    const mp=prioFilter==='todas'||c.prioridad===prioFilter;
+    return me&&mp;
+  });
+  if(!items.length&&allPlanContenido.length){
+    area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-title">Sin resultados</div><div class="empty-sub">Prueba otro filtro.</div></div></div>`;return;
+  }
+  if(!items.length){
+    area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div class="empty-title">Sin piezas</div><div class="empty-sub">Agrega reels, posts o carruseles.</div><button class="btn btn-primary" onclick="openPlanPanel()">+ Nueva pieza</button></div></div>`;return;
+  }
+  const tipIcon={reel:'🎬',post:'🖼️',carrusel:'📑'};
+  area.innerHTML=`<div class="plan-list-wrap">
+    ${items.map(c=>`
+      <div class="plan-row" onclick="openPlanPanelById('${c.id}')">
+        <div class="plan-row-accent ${c.tipo}"></div>
+        <div class="plan-row-body">
+          <div class="plan-row-icon">${tipIcon[c.tipo]||'📄'}</div>
+          <div class="plan-row-info">
+            <div class="plan-row-titulo">${c.tema?esc(c.tema):'Sin título'}</div>
+            <div class="plan-row-sub">${TIPO_LBL[c.tipo]||c.tipo}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,40)+'…':''}</div>
+          </div>
+          <div class="plan-row-badges">
+            <span class="${PR_CLS[c.prioridad]||'pr-media'}">${PR_LABEL[c.prioridad]||'Media'}</span>
+            <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
+          </div>
+        </div>
+      </div>`).join('')}
+    <div class="list-add-row" onclick="openPlanPanel()">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar pieza
+    </div>
+  </div>`;
+}
+
+function renderDialListNew(){
+  const area=document.getElementById('dialListArea');if(!area)return;
+  const estadoFilter=area.dataset.filterEstado||'todos';
+  const prioFilter=area.dataset.filterPrio||'todas';
+  let items=allDialContenido.filter(c=>{
+    const me=estadoFilter==='todos'||c.estado_interno===estadoFilter;
+    const mp=prioFilter==='todas'||c.prioridad===prioFilter;
+    return me&&mp;
+  });
+  if(!items.length&&allDialContenido.length){
+    area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-title">Sin resultados</div></div></div>`;return;
+  }
+  if(!items.length){
+    area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div><div class="empty-title">Sin diálogos</div><div class="empty-sub">Crea el guión para cada reel.</div><button class="btn btn-primary" onclick="openDialPanel()">+ Nuevo diálogo</button></div></div>`;return;
+  }
+  area.innerHTML=`<div class="plan-list-wrap">
+    ${items.map(c=>`
+      <div class="plan-row" onclick="openDialPanelById('${c.id}')">
+        <div class="plan-row-accent dialogo"></div>
+        <div class="plan-row-body">
+          <div class="plan-row-icon">🎬</div>
+          <div class="plan-row-info">
+            <div class="plan-row-titulo">${c.tema?esc(c.tema):'Sin título'}</div>
+            <div class="plan-row-sub">${c.dialogos?esc(c.dialogos).substring(0,60)+'…':'Sin diálogos aún'}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,30)+'…':''}</div>
+          </div>
+          <div class="plan-row-badges">
+            <span class="${PR_CLS[c.prioridad]||'pr-media'}">${PR_LABEL[c.prioridad]||'Media'}</span>
+            <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
+          </div>
+        </div>
+      </div>`).join('')}
+    <div class="list-add-row" onclick="openDialPanel()">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar diálogo
+    </div>
+  </div>`;
+}
+
 // ── INIT ──
 async function init(){
   const params=new URLSearchParams(window.location.search);
@@ -1281,8 +1750,10 @@ async function init(){
     const tipo=params.get('aprob');const cid=params.get('cid');const mid=params.get('mid');
     if(cid&&mid){await loadAprobacion(tipo,cid,mid);return;}
   }
-  // Need new columns - add them if missing
   await Promise.all([loadClientes(),loadEmpleados()]);
+  // Restore saved user
+  const savedUser=localStorage.getItem('conception_user');
+  if(savedUser&&allEmpleados.find(e=>e.id===savedUser)){currentUserId=savedUser;updateCurrentUserDisplay();}
   switchTab('clientes');
 }
 
