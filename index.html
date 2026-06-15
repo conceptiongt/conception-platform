@@ -761,7 +761,23 @@ textarea.form-input{resize:vertical;}
 <div class="panel" id="planPanel">
   <div class="panel-head">
     <div><div class="panel-title" id="planPanelTitle">Nueva pieza</div><div class="panel-sub" id="planPanelSub"></div></div>
-    <button class="modal-close" onclick="closePlanPanel()">×</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em">Estado</span>
+          <select class="form-select" id="pp-estado" style="padding:4px 28px 4px 8px;font-size:12.5px;border-radius:6px;min-width:110px">
+            <option value="pendiente">Pendiente</option><option value="proceso">En curso</option><option value="revision">En revisión</option><option value="listo">Listo</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em">Prioridad</span>
+          <select class="form-select" id="pp-prioridad" style="padding:4px 28px 4px 8px;font-size:12.5px;border-radius:6px;min-width:110px">
+            <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
+          </select>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closePlanPanel()">×</button>
+    </div>
   </div>
   <div class="panel-body">
     <div>
@@ -784,37 +800,10 @@ textarea.form-input{resize:vertical;}
     </div>
     <input type="hidden" id="pp-responsable" value="">
     <input type="hidden" id="pp-fecha" value="">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div>
-        <div class="panel-section-title">Prioridad</div>
-        <select class="form-select" id="pp-prioridad">
-          <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
-        </select>
-      </div>
-      <div>
-        <div class="panel-section-title">Estado</div>
-        <select class="form-select" id="pp-estado">
-          <option value="pendiente">Pendiente</option><option value="proceso">En curso</option><option value="revision">En revisión</option><option value="listo">Listo</option>
-        </select>
-      </div>
-    </div>
+
     <div>
       <div class="panel-section-title">Copy</div>
-      <textarea class="form-input" id="pp-copy" rows="4" placeholder="Escribe el copy o usa el asistente IA…"></textarea>
-      <div class="claude-box" style="margin-top:10px">
-        <div class="claude-box-head"><span class="claude-dot"></span><span class="claude-box-title">Asistente IA — Generar copy</span></div>
-        <div class="claude-body">
-          <textarea class="claude-textarea" id="pp-copy-prompt" placeholder="Describe el objetivo y tono del post…"></textarea>
-          <div class="claude-actions">
-            <button class="btn btn-primary btn-sm" onclick="generatePlanCopy()">✦ Generar copy</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearPlanCopy()">Limpiar</button>
-          </div>
-          <div id="pp-copy-result" style="display:none">
-            <div class="claude-result" id="pp-copy-text"></div>
-            <div class="claude-result-actions"><button class="btn-use" onclick="usePlanCopy()">Usar este copy</button></div>
-          </div>
-        </div>
-      </div>
+      <textarea class="form-input" id="pp-copy" rows="5" placeholder="Escribe el copy aquí…"></textarea>
     </div>
     <div id="pp-media-section">
       <div class="panel-section-title" id="pp-media-title">Archivo de video</div>
@@ -929,20 +918,7 @@ textarea.form-input{resize:vertical;}
     <div>
       <div class="panel-section-title">Diálogos / Guión</div>
       <textarea class="form-input" id="dp-dialogos" rows="7" placeholder="Escribe el guión del reel aquí…"></textarea>
-      <div class="claude-box" style="margin-top:10px">
-        <div class="claude-box-head"><span class="claude-dot"></span><span class="claude-box-title">Asistente IA — Generar diálogos</span></div>
-        <div class="claude-body">
-          <textarea class="claude-textarea" id="dp-dial-prompt" placeholder="Ej: Reel de 30s mostrando 3 beneficios, tono profesional y cercano…"></textarea>
-          <div class="claude-actions">
-            <button class="btn btn-primary btn-sm" onclick="generateDialCopy()">✦ Generar diálogos</button>
-            <button class="btn btn-ghost btn-sm" onclick="clearDialCopy()">Limpiar</button>
-          </div>
-          <div id="dp-dial-result" style="display:none">
-            <div class="claude-result" id="dp-dial-text"></div>
-            <div class="claude-result-actions"><button class="btn-use" onclick="useDialCopy()">Usar estos diálogos</button></div>
-          </div>
-        </div>
-      </div>
+
     </div>
     <div id="dp-feedback-section" style="display:none">
       <div class="panel-section-title" style="color:var(--red)">💬 Comentario del cliente</div>
@@ -1215,7 +1191,22 @@ function renderPlanMain(){
     <div class="plan-header">
       <div><div class="plan-cliente-name">${esc(activePlanCliente.empresa)}</div><div class="plan-cliente-sub">${activePlanMesId?(allPlanMeses.find(m=>m.id===activePlanMesId)?.nombre||''):'Selecciona un mes'}</div></div>
       <div class="plan-header-right">
-        ${activePlanMesId?`<button class="btn btn-ghost btn-sm" onclick="copiarLinkPlan()"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5H6a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v2"/></svg>Link cliente</button><button class="btn btn-primary btn-sm" onclick="openPlanPanel()">+ Nueva pieza</button>`:''}
+        ${activePlanMesId?`
+          <select id="planFilterEstado" onchange="setPlanFilter('estado',this.value,this)" style="padding:6px 10px;border:1px solid var(--gray-200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--gray-600);background:#fff;cursor:pointer;outline:none">
+            <option value="todos">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="proceso">En curso</option>
+            <option value="revision">En revisión</option>
+            <option value="listo">Listo</option>
+          </select>
+          <select id="planFilterPrio" onchange="setPlanFilter('prio',this.value,this)" style="padding:6px 10px;border:1px solid var(--gray-200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--gray-600);background:#fff;cursor:pointer;outline:none">
+            <option value="todas">Todas las prioridades</option>
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="copiarLinkPlan()"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5H6a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v2"/></svg>Link cliente</button>
+          <button class="btn btn-primary btn-sm" onclick="openPlanPanel()">+ Nueva pieza</button>`:''}
       </div>
     </div>
     <div class="meses-tabs">
@@ -1246,17 +1237,6 @@ function renderPlanMain(){
       <button class="plan-filter-chip" data-filter="tipo" onclick="setPlanFilter('tipo','reel',this)">🎬 Reels</button>
       <button class="plan-filter-chip" data-filter="tipo" onclick="setPlanFilter('tipo','post',this)">🖼️ Posts</button>
       <button class="plan-filter-chip" data-filter="tipo" onclick="setPlanFilter('tipo','carrusel',this)">📑 Carruseles</button>
-      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-left:8px;margin-right:4px">Estado:</span>
-      <button class="plan-filter-chip active" data-filter="estado" onclick="setPlanFilter('estado','todos',this)">Todos</button>
-      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','pendiente',this)">Pendiente</button>
-      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','proceso',this)">En curso</button>
-      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','revision',this)">En revisión</button>
-      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','listo',this)">Listo</button>
-      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-left:8px;margin-right:4px">Prioridad:</span>
-      <button class="plan-filter-chip active" data-filter="prio" onclick="setPlanFilter('prio','todas',this)">Todas</button>
-      <button class="plan-filter-chip" data-filter="prio" onclick="setPlanFilter('prio','alta',this)">Alta</button>
-      <button class="plan-filter-chip" data-filter="prio" onclick="setPlanFilter('prio','media',this)">Media</button>
-      <button class="plan-filter-chip" data-filter="prio" onclick="setPlanFilter('prio','baja',this)">Baja</button>
     </div>`:''}
     <div class="plan-area" id="planListArea">
       ${activePlanMesId?'<div class="spinner" style="margin:40px auto"></div>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-400);font-size:14px">Selecciona o crea una carpeta de mes</div>'}
@@ -1327,8 +1307,7 @@ function openPlanPanel(pieza=null){
   if(pieza?.estado_aprobacion==='cambios'&&pieza?.comentario_cliente){fb.style.display='';ft.textContent='"'+pieza.comentario_cliente+'"';}
   else{fb.style.display='none';}
   selectPlanTipo(currentPlanTipo);
-  document.getElementById('pp-copy-result').style.display='none';
-  document.getElementById('pp-copy-prompt').value='';
+
   renderPlanMediaPreview();
   document.getElementById('planPanelOverlay').classList.add('open');
   document.getElementById('planPanel').classList.add('open');
@@ -1395,7 +1374,7 @@ async function savePlanPieza(){
   else{({error}=await db.from('contenido').insert(payload));}
   if(error){showToast('Error: '+error.message,true);return;}
   showToast(editingPlanId?'Pieza actualizada':'Pieza guardada');
-  closePlanPanel();await loadPlanContenido(activePlanMesId);renderPlanList();
+  closePlanPanel();await loadPlanContenido(activePlanMesId);renderPlanListNew();
 }
 
 function usePlanCopy(){document.getElementById('pp-copy').value=document.getElementById('pp-copy-text').textContent;showToast('Copy aplicado');}
@@ -1691,12 +1670,12 @@ function showToast(msg,isError=false){const t=document.getElementById('toast');i
 // ── PLAN/DIAL FILTERS ──
 function setPlanFilter(type,val,el){
   const area=document.getElementById('planListArea');if(!area)return;
-  const group=el.closest('.plan-filter-bar');
-  if(group){
-    // Only deactivate chips in same type group by checking data-filter attr
-    group.querySelectorAll('.plan-filter-chip[data-filter="'+type+'"]').forEach(c=>c.classList.remove('active'));
+  // Handle both chip buttons and select elements
+  if(el&&el.classList&&el.classList.contains('plan-filter-chip')){
+    const group=el.closest('.plan-filter-bar');
+    if(group){group.querySelectorAll('.plan-filter-chip[data-filter="'+type+'"]').forEach(c=>c.classList.remove('active'));}
+    el.classList.add('active');
   }
-  el.classList.add('active');
   if(type==='estado')area.dataset.filterEstado=val;
   else if(type==='prio')area.dataset.filterPrio=val;
   else area.dataset.filterTipo=val;
