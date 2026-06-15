@@ -426,6 +426,15 @@ textarea.form-input{resize:vertical;}
 </style>
 </head>
 <body>
+<script>
+// Hide app immediately if this is a client approval link
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('aprob')&&p.get('cid')&&p.get('mid')){
+    document.documentElement.style.visibility='hidden';
+  }
+})();
+</script>
 <div class="sb-backdrop" id="backdrop" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
@@ -1561,7 +1570,11 @@ async function saveMes(){
 
 // ── APROBACIÓN CLIENTE ──
 async function loadAprobacion(tipo,clienteId,mesId){
-  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f3"><div style="text-align:center;font-family:sans-serif"><div style="width:26px;height:26px;border:3px solid #eee;border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div><div style="font-size:13px;color:#999">Cargando...</div></div></div>';
+  // Full page takeover - hide everything, show loading
+  document.body.innerHTML='';
+  document.body.style.cssText='margin:0;padding:0;background:#f5f5f3;min-height:100vh';
+  document.documentElement.style.visibility='visible';
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f3"><div style="text-align:center;font-family:sans-serif"><div style="width:26px;height:26px;border:3px solid #eee;border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div><div style="font-size:13px;color:#999">Cargando...</div></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
 
   let q=db.from('contenido').select('*').eq('mes_id',mesId).order('tipo').order('created_at');
   if(tipo==='2')q=q.eq('tipo','reel');
