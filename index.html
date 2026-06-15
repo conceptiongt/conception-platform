@@ -423,18 +423,24 @@ textarea.form-input{resize:vertical;}
   .aprob-body{padding:16px;}
   .aprob-intro{margin:16px 16px 0;}
 }
+
+/* PLAN DRAG & SELECT */
+.plan-drag-handle{padding:0 10px 0 14px;color:var(--gray-400);cursor:grab;font-size:18px;flex-shrink:0;display:flex;align-items:center;user-select:none;}
+.plan-drag-handle:active{cursor:grabbing;}
+.plan-row-ap{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.plan-row-ap.aprobado{background:#16a34a;}
+.plan-row-ap.cambios{background:#dc2626;}
+.plan-row-ap.pendiente{background:var(--gray-200);}
+.plan-check{width:15px;height:15px;cursor:pointer;accent-color:var(--black);flex-shrink:0;margin-right:8px;}
+.plan-row.dragging{opacity:.35;}
+.plan-row.drag-over{border-top:2px solid var(--black);}
+.bulk-bar{display:none;align-items:center;gap:10px;padding:10px 20px;background:#eff6ff;border-bottom:1px solid #bfdbfe;font-size:13px;font-weight:500;color:#1d4ed8;flex-shrink:0;}
+.bulk-bar.show{display:flex;}
+.plan-row .icon-btn.del{opacity:0;transition:opacity .15s;}
+.plan-row:hover .icon-btn.del{opacity:1;}
 </style>
 </head>
 <body>
-<script>
-// Hide app immediately if this is a client approval link
-(function(){
-  var p=new URLSearchParams(window.location.search);
-  if(p.get('aprob')&&p.get('cid')&&p.get('mid')){
-    document.documentElement.style.visibility='hidden';
-  }
-})();
-</script>
 <div class="sb-backdrop" id="backdrop" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
@@ -445,24 +451,36 @@ textarea.form-input{resize:vertical;}
   </div>
   <nav class="nav">
     <div class="nav-label">Principal</div>
-    <button class="nav-item active" onclick="switchTab('clientes')" data-tab="clientes">
+    <button class="nav-item active" onclick="switchTab('clientes')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M18 20a8 8 0 10-16 0"/></svg>Clientes
     </button>
-    <button class="nav-item" onclick="switchTab('planificacion')" data-tab="planificacion">
+    <button class="nav-item" onclick="switchTab('planificacion')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Planificación
     </button>
-    <button class="nav-item" onclick="switchTab('dialogos')" data-tab="dialogos">
+    <button class="nav-item" onclick="switchTab('dialogos')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Diálogos
     </button>
-    <button class="nav-item" onclick="switchTab('reportes')" data-tab="reportes">
+    <button class="nav-item" onclick="switchTab('reportes')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6M9 19H5m4 0h6m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0h4m-4 0H9"/></svg>Reportes
     </button>
-
+    <div class="nav-label" style="margin-top:8px">Contenido IA</div>
+    <button class="nav-item" onclick="switchTab('ingenieria')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10l-4 4m0 0l-4-4m4 4V3m5 14H4"/></svg>Ingeniería inversa
+    </button>
+    <button class="nav-item" onclick="switchTab('ganchos-ia')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Creador de ganchos
+    </button>
+    <button class="nav-item" onclick="switchTab('mis-guiones')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Mis guiones
+    </button>
+    <button class="nav-item" onclick="switchTab('mis-ganchos')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>Mis ganchos
+    </button>
     <div class="nav-label" style="margin-top:8px">Equipo</div>
-    <button class="nav-item" onclick="switchTab('tareas')" data-tab="tareas">
+    <button class="nav-item" onclick="switchTab('tareas')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Tareas
     </button>
-    <button class="nav-item" onclick="switchTab('empleados')" data-tab="empleados">
+    <button class="nav-item" onclick="switchTab('empleados')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20H3m14 0a2 2 0 002-2v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1a2 2 0 002 2m10 0H3M10 10a4 4 0 100-8 4 4 0 000 8z"/></svg>Empleados
     </button>
   </nav>
@@ -959,17 +977,17 @@ function openSidebar(){document.getElementById('sidebar').classList.add('open');
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('backdrop').classList.remove('open');}
 
 // ── TABS ──
-const ALL_TABS=['clientes','planificacion','dialogos','reportes','tareas','empleados'];
-const FLEX_TABS=['planificacion','dialogos','tareas'];
+const ALL_TABS=['clientes','planificacion','dialogos','reportes','tareas','empleados','ingenieria','ganchos-ia','mis-guiones','mis-ganchos'];
+const FLEX_TABS=['planificacion','dialogos','tareas','ingenieria','ganchos-ia','mis-guiones','mis-ganchos'];
 function switchTab(tab){
   ALL_TABS.forEach(t=>{
     const el=document.getElementById('tab-'+t);
     if(el)el.style.display=t===tab?(FLEX_TABS.includes(t)?'flex':''):'none';
   });
-  document.querySelectorAll('.nav-item[data-tab]').forEach(el=>{
-    el.classList.toggle('active',el.dataset.tab===tab);
+  document.querySelectorAll('.nav-item').forEach((el,i)=>{
+    el.classList.toggle('active',['clientes','planificacion','dialogos','reportes','tareas','empleados','ingenieria','ganchos-ia','mis-guiones','mis-ganchos'][i]===tab);
   });
-  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes',tareas:'Tareas',empleados:'Empleados'};
+  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes',tareas:'Tareas',empleados:'Empleados',ingenieria:'Ingeniería Inversa','ganchos-ia':'Creador de Ganchos','mis-guiones':'Mis Guiones','mis-ganchos':'Mis Ganchos'};
   document.getElementById('pageTitle').textContent=titles[tab]||tab;
   const pc=document.getElementById('pageCount');
   const sw=document.getElementById('searchWrap');
@@ -981,6 +999,9 @@ function switchTab(tab){
   if(tab==='dialogos')renderDialClienteList();
   if(tab==='empleados')loadEmpleados();
   if(tab==='tareas')loadTareas();
+  if(tab==='mis-guiones')loadMisGuiones();
+  if(tab==='mis-ganchos')loadMisGanchos();
+  if(tab==='ingenieria'||tab==='ganchos-ia')populateIAClientes();
   closeSidebar();
 }
 
@@ -1220,17 +1241,22 @@ function renderPlanMain(){
       </div>
     </div>
     <div class="plan-filter-bar">
-      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Estado:</span>
-      <button class="plan-filter-chip active" onclick="setPlanFilter('estado','todos',this)">Todos</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('estado','pendiente',this)">Pendiente</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('estado','proceso',this)">En curso</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('estado','revision',this)">En revisión</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('estado','listo',this)">Listo</button>
+      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Tipo:</span>
+      <button class="plan-filter-chip active" data-filter="tipo" onclick="setPlanFilter('tipo','todos',this)">Todos</button>
+      <button class="plan-filter-chip" data-filter="tipo" onclick="setPlanFilter('tipo','reel',this)">🎬 Reels</button>
+      <button class="plan-filter-chip" data-filter="tipo" onclick="setPlanFilter('tipo','post',this)">🖼️ Posts</button>
+      <button class="plan-filter-chip" data-filter="tipo" onclick="setPlanFilter('tipo','carrusel',this)">📑 Carruseles</button>
+      <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-left:8px;margin-right:4px">Estado:</span>
+      <button class="plan-filter-chip active" data-filter="estado" onclick="setPlanFilter('estado','todos',this)">Todos</button>
+      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','pendiente',this)">Pendiente</button>
+      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','proceso',this)">En curso</button>
+      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','revision',this)">En revisión</button>
+      <button class="plan-filter-chip" data-filter="estado" onclick="setPlanFilter('estado','listo',this)">Listo</button>
       <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-left:8px;margin-right:4px">Prioridad:</span>
-      <button class="plan-filter-chip active" onclick="setPlanFilter('prio','todas',this)">Todas</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('prio','alta',this)">Alta</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('prio','media',this)">Media</button>
-      <button class="plan-filter-chip" onclick="setPlanFilter('prio','baja',this)">Baja</button>
+      <button class="plan-filter-chip active" data-filter="prio" onclick="setPlanFilter('prio','todas',this)">Todas</button>
+      <button class="plan-filter-chip" data-filter="prio" onclick="setPlanFilter('prio','alta',this)">Alta</button>
+      <button class="plan-filter-chip" data-filter="prio" onclick="setPlanFilter('prio','media',this)">Media</button>
+      <button class="plan-filter-chip" data-filter="prio" onclick="setPlanFilter('prio','baja',this)">Baja</button>
     </div>`:''}
     <div class="plan-area" id="planListArea">
       ${activePlanMesId?'<div class="spinner" style="margin:40px auto"></div>':'<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--gray-400);font-size:14px">Selecciona o crea una carpeta de mes</div>'}
@@ -1372,17 +1398,6 @@ async function savePlanPieza(){
   closePlanPanel();await loadPlanContenido(activePlanMesId);renderPlanList();
 }
 
-async function deletePlanPieza(id){if(!confirm('¿Eliminar?'))return;await db.from('contenido').delete().eq('id',id);showToast('Eliminado');await loadPlanContenido(activePlanMesId);renderPlanList();}
-
-async function generatePlanCopy(){
-  const inst=document.getElementById('pp-copy-prompt').value.trim();if(!inst){showToast('Describe el post primero',true);return;}
-  const btn=document.querySelector('#planPanel .claude-actions .btn-primary');if(btn){btn.textContent='✦ Generando…';btn.disabled=true;}
-  try{
-    const r=await callClaude(`Eres experto copywriter de agencia de marketing premium en Guatemala. Escribe copy profesional para ${currentPlanTipo} de Instagram para "${activePlanCliente?.empresa||'el cliente'}". Instrucciones: ${inst}. Solo el copy, sin explicaciones, máximo 150 palabras.`);
-    document.getElementById('pp-copy-text').textContent=r;document.getElementById('pp-copy-result').style.display='';
-  }catch(e){showToast('Error IA',true);}
-  if(btn){btn.textContent='✦ Generar copy';btn.disabled=false;}
-}
 function usePlanCopy(){document.getElementById('pp-copy').value=document.getElementById('pp-copy-text').textContent;showToast('Copy aplicado');}
 function clearPlanCopy(){document.getElementById('pp-copy-result').style.display='none';document.getElementById('pp-copy-prompt').value='';}
 
@@ -1570,201 +1585,71 @@ async function saveMes(){
 
 // ── APROBACIÓN CLIENTE ──
 async function loadAprobacion(tipo,clienteId,mesId){
-  // Full page takeover - hide everything, show loading
-  document.body.innerHTML='';
-  document.body.style.cssText='margin:0;padding:0;background:#f5f5f3;min-height:100vh';
-  document.documentElement.style.visibility='visible';
-  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f3"><div style="text-align:center;font-family:sans-serif"><div style="width:26px;height:26px;border:3px solid #eee;border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div><div style="font-size:13px;color:#999">Cargando...</div></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
-
-  let q=db.from('contenido').select('*').eq('mes_id',mesId).order('tipo').order('created_at');
-  if(tipo==='2')q=q.eq('tipo','reel');
-  const [{data:cliente},{data:mes},{data:piezas}]=await Promise.all([
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:\'DM Sans\',sans-serif;color:#999"><div style="text-align:center"><div style="width:24px;height:24px;border:2px solid #eee;border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div>Cargando…</div></div><style>@keyframes spin{to{transform:rotate(360deg);}}</style>';
+  let piezasQuery=db.from('contenido').select('*').eq('mes_id',mesId).order('created_at');
+  if(tipo==='2')piezasQuery=piezasQuery.eq('tipo','reel');
+  const[{data:cliente},{data:mes},{data:piezas}]=await Promise.all([
     db.from('clientes').select('*').eq('id',clienteId).single(),
     db.from('meses').select('*').eq('id',mesId).single(),
-    q
+    piezasQuery
   ]);
-
-  const all=piezas||[];
-  const total=all.length;
-  const aprobadas=all.filter(p=>p.estado_aprobacion==='aprobado').length;
-  const pct=total>0?Math.round((aprobadas/total)*100):0;
-  const reels=all.filter(p=>p.tipo==='reel');
-  const posts=all.filter(p=>p.tipo==='post');
-  const carruseles=all.filter(p=>p.tipo==='carrusel');
-  const dialogos=all.filter(p=>!['reel','post','carrusel'].includes(p.tipo));
-  const firstTab=reels.length?'reels':posts.length?'posts':carruseles.length?'carruseles':'dialogos';
-
-  function rebuildFooter(p){
-    var foot=document.getElementById('afoot-'+p.id);
-    if(!foot)return;
-    var isAp=p.estado_aprobacion==='aprobado', isCa=p.estado_aprobacion==='cambios';
-    var btnStyle='flex:1;padding:12px;border-radius:10px;border:2px solid;font-size:13px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif;transition:all .18s';
-    foot.innerHTML='';
-    var row=document.createElement('div'); row.style.cssText='display:flex;gap:10px';
-    var ok=document.createElement('button');
-    ok.style.cssText=btnStyle+';background:'+(isAp?'#16a34a':'#fff')+';color:'+(isAp?'#fff':'#16a34a')+';border-color:#16a34a';
-    ok.textContent=isAp?'✓ Aprobado ✓':'✓ Aprobar';
-    ok.onclick=function(){aprAction(p.id,isAp?'pendiente':'aprobado');};
-    var no=document.createElement('button');
-    no.style.cssText=btnStyle+';background:'+(isCa?'#dc2626':'#fff')+';color:'+(isCa?'#fff':'#dc2626')+';border-color:#dc2626';
-    no.textContent=isCa?'✕ Con cambios ✕':'✕ Solicitar cambios';
-    no.onclick=function(){aprAction(p.id,isCa?'pendiente':'cambios');};
-    row.appendChild(ok); row.appendChild(no); foot.appendChild(row);
-    if(isCa&&p.comentario_cliente){
-      var d=document.createElement('div');
-      d.style.cssText='margin-top:10px;padding:10px 13px;background:#fef2f2;border-radius:8px;font-size:12.5px;color:#b91c1c;font-style:italic';
-      d.textContent='"'+p.comentario_cliente+'"'; foot.appendChild(d);
-    } else if(!isCa){
-      var ta=document.createElement('textarea');
-      ta.id='acmt-'+p.id; ta.placeholder='Escriba aquí los cambios que necesita…';
-      ta.style.cssText='width:100%;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13px;color:#111;outline:none;resize:vertical;min-height:75px;margin-top:10px;display:none;line-height:1.5';
-      var sb=document.createElement('button');
-      sb.id='asavebtn-'+p.id; sb.textContent='Enviar respuesta';
-      sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#111;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-top:10px;display:none';
-      var pid=p.id; sb.onclick=function(){aprSave(pid);};
-      foot.appendChild(ta); foot.appendChild(sb);
-    }
-  }
+  const tipoCls={reel:'aprob-tipo-reel',post:'aprob-tipo-post',carrusel:'aprob-tipo-carrusel'};
+  const secLabel=tipo==='2'?'Diálogos para revisión':'Contenido para revisión';
 
   function mediaBlock(p){
-    const urls=p.media_urls||[]; if(!urls.length)return'';
-    const pid='m'+p.id.replace(/-/g,'');
-    if(p.tipo==='reel')return`<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">VIDEO</div><video src="${urls[0]}" controls playsinline style="width:100%;border-radius:10px;background:#000;max-height:70vh;display:block"></video></div>`;
-    if(p.tipo==='post')return`<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">IMAGEN</div><img src="${urls[0]}" onclick="window._aprLb('${urls[0]}')" style="width:100%;height:auto;border-radius:10px;cursor:zoom-in;display:block"></div>`;
+    const urls=p.media_urls||[];if(!urls.length)return'';
+    if(p.tipo==='reel')return`<div class="aprob-media"><div class="aprob-media-label">Video</div><div class="media-reel-frame"><video src="${urls[0]}" controls playsinline style="width:100%;height:100%;object-fit:cover;display:block;background:#000"></video></div></div>`;
+    if(p.tipo==='post')return`<div class="aprob-media"><div class="aprob-media-label">Imagen — toca para ampliar</div><div class="media-post-frame" style="cursor:pointer" onclick="openLightbox('img','${urls[0]}')"><img src="${urls[0]}" alt="post" style="width:100%;height:100%;object-fit:cover;display:block;min-height:100%"></div></div>`;
     if(p.tipo==='carrusel'){
-      const p2='c'+pid;
-      const imgs=urls.map((u,i)=>`<img src="${u}" style="width:100%;height:auto;display:${i===0?'block':'none'};border-radius:10px;cursor:zoom-in" onclick="window._aprLb('${u}')">`).join('');
-      const dots=urls.map((_,i)=>`<span onclick="window._aprSlide('${p2}',${i},${urls.length})" id="adot-${p2}-${i}" style="display:inline-block;width:7px;height:7px;border-radius:50%;cursor:pointer;background:${i===0?'#111':'#ddd'}"></span>`).join('');
-      return`<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">CARRUSEL (${urls.length} imágenes)</div><div id="asl-${p2}">${imgs}</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><button onclick="window._aprSlide('${p2}',(window._ss['${p2}']||0)-1+${urls.length},${urls.length})" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">‹</button><div style="display:flex;gap:5px">${dots}</div><button onclick="window._aprSlide('${p2}',(window._ss['${p2}']||0)+1,${urls.length})" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">›</button></div><div style="text-align:center;font-size:11px;color:#999;margin-top:6px" id="acnt-${p2}">1 / ${urls.length}</div></div>`;
+      const pid=p.id.replace(/-/g,'');
+      const slides=urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" onclick="openLightbox('img','${u}')">`).join('');
+      const dots=urls.map((_,i)=>`<div class="carrusel-dot ${i===0?'active':''}" onclick="goSlide('${pid}',${i})"></div>`).join('');
+      return`<div class="aprob-media"><div class="aprob-media-label">Carrusel (${urls.length} imágenes)</div><div class="carrusel-slider" id="cs-${pid}">${slides}<button class="carrusel-arrow carrusel-prev" onclick="prevSlide('${pid}')">‹</button><button class="carrusel-arrow carrusel-next" onclick="nextSlide('${pid}')">›</button><div class="carrusel-dots">${dots}</div><div class="carrusel-counter" id="cc-${pid}">1 / ${urls.length}</div></div></div>`;
     }
     return'';
   }
 
-  function tabBtn(id,label,items){
-    if(!items.length)return'';
-    const ap=items.filter(p=>p.estado_aprobacion==='aprobado').length;
-    return`<button onclick="window._aprTab('${id}')" id="atab-btn-${id}" style="padding:12px 18px;border:none;background:none;font-family:-apple-system,sans-serif;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">${label} <span style="background:#f3f4f6;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:2px">${items.length}</span>${ap?`<span style="background:#16a34a;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-left:3px">✓${ap}</span>`:''}</button>`;
+  function footerBlock(p){
+    if(p.estado_aprobacion==='aprobado')return`<div class="aprob-status aprob-status-ok">✓ Aprobado</div><div style="display:flex;gap:10px;margin-top:12px"><button class="aprob-btn aprob-btn-ok sel">✓ Aprobado</button><button class="aprob-btn aprob-btn-no" onclick="setAprob('${p.id}','cambios')">✕ Solicitar cambios</button></div>`;
+    if(p.estado_aprobacion==='cambios')return`<div class="aprob-status aprob-status-cambios">✕ Cambios solicitados${p.comentario_cliente?`<div style="font-weight:400;margin-top:4px;font-size:12.5px;font-style:italic">"${esc(p.comentario_cliente)}"</div>`:''}</div><div style="display:flex;gap:10px;margin-top:12px"><button class="aprob-btn aprob-btn-ok" onclick="setAprob('${p.id}','aprobado')">✓ Aprobar</button><button class="aprob-btn aprob-btn-no sel">✕ Con cambios</button></div>`;
+    return`<div class="aprob-actions"><button class="aprob-btn aprob-btn-ok" onclick="setAprob('${p.id}','aprobado')">✓ Aprobar</button><button class="aprob-btn aprob-btn-no" onclick="setAprob('${p.id}','cambios')">✕ Solicitar cambios</button></div><textarea class="aprob-comment" id="comment-${p.id}" placeholder="Escriba sus comentarios o los cambios que necesita…"></textarea><button class="aprob-save-btn" id="savebtn-${p.id}" onclick="guardarAprob('${p.id}')">Guardar respuesta</button>`;
   }
 
-  function tabSection(id,items){
-    if(!items.length)return'';
-    return`<div id="atab-${id}" style="display:none">${items.map((p,i)=>`
-      <div id="acard-${p.id}" style="background:#fff;border-radius:14px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.07)">
-        <div style="height:3px;background:${p.tipo==='reel'?'linear-gradient(90deg,#be185d,#ec4899)':p.tipo==='post'?'linear-gradient(90deg,#2563eb,#60a5fa)':p.tipo==='carrusel'?'linear-gradient(90deg,#059669,#34d399)':'linear-gradient(90deg,#7c3aed,#a78bfa)'}"></div>
-        <div style="padding:16px 18px">
-          ${p.tema?`<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:10px">${esc(p.tema)}</div>`:''}
-          ${p.copy?`<div style="font-size:13.5px;line-height:1.75;color:#374151;white-space:pre-wrap">${esc(p.copy)}</div>`:''}
-          ${p.dialogos?`<div style="margin-top:12px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">GUIÓN</div><div style="font-size:13px;line-height:1.85;color:#4b5563;white-space:pre-wrap;background:#f9fafb;border-radius:8px;padding:13px 15px">${esc(p.dialogos)}</div></div>`:''}
-          ${mediaBlock(p)}
-        </div>
-        <div style="padding:14px 18px;border-top:1px solid #f3f4f6" id="afoot-${p.id}"></div>
-      </div>`).join('')}</div>`;
-  }
-
-  // Build page
-  document.body.style.cssText='margin:0;padding:0;background:#f5f5f3;min-height:100vh;font-family:-apple-system,sans-serif';
   document.body.innerHTML=`
-    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
-    <div style="max-width:600px;margin:0 auto;padding:0 0 80px">
-      <div style="background:#111;color:#fff;padding:28px 24px 24px;position:relative;overflow:hidden">
-        <div style="position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:rgba(255,255,255,.03);border-radius:50%"></div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;opacity:.4;margin-bottom:14px">Conception · Contenido para revisión</div>
-        <div style="font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px">${esc(cliente?.empresa||'')}</div>
-        <div style="font-size:12px;opacity:.4">${esc(mes?.nombre||'')} · ${total} piezas${aprobadas>0?' · '+aprobadas+' aprobada'+(aprobadas>1?'s':''):''}</div>
-        ${total>0?`<div style="margin-top:16px;background:rgba(255,255,255,.1);border-radius:20px;height:3px"><div style="height:100%;background:#fff;border-radius:20px;width:${pct}%;transition:width .5s" id="aprogbar"></div></div><div style="font-size:10px;opacity:.4;margin-top:5px;font-weight:600">${pct}% aprobado</div>`:''}
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'DM Sans',sans-serif;background:#f7f7f5;color:#0a0a0a;}
+    ${document.querySelector('style').textContent}</style>
+    <div class="aprob-wrap">
+      <div class="aprob-header">
+        <div class="aprob-logo">Conception · ${secLabel}</div>
+        <div class="aprob-cliente-name">${esc(cliente?.empresa||'')}</div>
+        <div class="aprob-meta">${esc(mes?.nombre||'')} · ${piezas?.length||0} elementos para revisión</div>
       </div>
-      <div style="margin:14px 12px 0;background:#fff;border-radius:12px;padding:14px 18px;font-size:13px;color:#6b7280;line-height:1.65;box-shadow:0 1px 3px rgba(0,0,0,.05)">
-        Estimado cliente, a continuación encontrará el contenido preparado para su revisión. Seleccione si aprueba cada pieza o si necesita cambios.
-      </div>
-      ${total>0?`
-      <div style="margin:12px 12px 0;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden">
-        <div style="display:flex;border-bottom:1px solid #f3f4f6;overflow-x:auto" id="atab-bar">
-          ${tabBtn('reels','🎬 Reels',reels)}${tabBtn('posts','🖼️ Posts',posts)}${tabBtn('carruseles','📑 Carruseles',carruseles)}${tabBtn('dialogos','💬 Diálogos',dialogos)}
-        </div>
-        <div style="padding:14px">
-          ${tabSection('reels',reels)}${tabSection('posts',posts)}${tabSection('carruseles',carruseles)}${tabSection('dialogos',dialogos)}
-        </div>
-      </div>`:'<div style="padding:60px;text-align:center;color:#999">Sin contenido.</div>'}
-      <div style="background:#fff;border-radius:12px;margin:12px 12px 0;padding:18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.05)">
-        <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:3px">¿Todo revisado?</div>
-        <div style="font-size:12.5px;color:#9ca3af">Sus respuestas se guardan automáticamente.</div>
+      <div class="aprob-intro">Estimado cliente, a continuación encontrará el contenido preparado para su revisión. Por favor revise cada pieza y seleccione si la aprueba o si necesita cambios. Puede dejar sus comentarios en el campo correspondiente.</div>
+      <div class="aprob-body">
+        ${!piezas?.length?'<div class="empty-state"><div class="empty-title">Sin contenido para revisar</div></div>':
+          piezas.map(p=>`
+            <div class="aprob-card" id="card-${p.id}">
+              <div class="aprob-card-head">
+                <span class="aprob-cuenta">${esc(cliente?.empresa||'')}</span>
+                <span class="aprob-tipo-badge ${tipo==='2'?'aprob-tipo-dialogo':tipoCls[p.tipo]||''}">${tipo==='2'?'DIÁLOGO':p.tipo?.toUpperCase()||''}</span>
+              </div>
+              <div class="aprob-card-body">
+                ${p.tema?`<div class="aprob-tema">${esc(p.tema)}</div>`:''}
+                ${p.copy&&tipo!=='2'?`<div class="aprob-copy">${esc(p.copy)}</div>`:''}
+                ${p.dialogos?`<div class="aprob-divider"></div><div class="aprob-dial-label">Guión / Diálogos</div><div class="aprob-dial">${esc(p.dialogos)}</div>`:''}
+                ${tipo!=='2'?mediaBlock(p):''}
+              </div>
+              <div class="aprob-card-foot" id="foot-${p.id}">${footerBlock(p)}</div>
+            </div>`).join('')}
       </div>
     </div>
-    <div id="atoast" style="position:fixed;bottom:20px;right:20px;background:#111;color:#fff;padding:11px 17px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;pointer-events:none;max-width:280px"></div>`;
+    <div class="toast" id="toast"></div>`;
 
-  // Render footers using DOM
-  all.forEach(p=>rebuildFooter(p));
-
-  // Global helpers
-  window._ss={};
-  window._aprTab=function(id){
-    document.querySelectorAll('#atab-bar button').forEach(function(b){b.style.color='#6b7280';b.style.borderBottomColor='transparent';});
-    var btn=document.getElementById('atab-btn-'+id);
-    if(btn){btn.style.color='#111';btn.style.borderBottomColor='#111';}
-    ['reels','posts','carruseles','dialogos'].forEach(function(t){
-      var el=document.getElementById('atab-'+t);if(el)el.style.display=t===id?'block':'none';
-    });
-  };
-  window._aprSlide=function(pid,idx,total){
-    idx=((idx%total)+total)%total;
-    var sl=document.getElementById('asl-'+pid);if(!sl)return;
-    sl.querySelectorAll('img').forEach(function(img,i){img.style.display=i===idx?'block':'none';});
-    for(var i=0;i<total;i++){var d=document.getElementById('adot-'+pid+'-'+i);if(d)d.style.background=i===idx?'#111':'#ddd';}
-    var cnt=document.getElementById('acnt-'+pid);if(cnt)cnt.textContent=(idx+1)+' / '+total;
-    window._ss[pid]=idx;
-  };
-  window._aprLb=function(src){
-    var lb=document.createElement('div');
-    lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
-    var img=document.createElement('img');img.src=src;img.style.cssText='max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px';
-    var x=document.createElement('div');x.style.cssText='position:fixed;top:16px;right:20px;color:#fff;font-size:28px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.12);border-radius:50%';
-    x.textContent='×';x.onclick=function(){lb.remove();};
-    lb.appendChild(img);lb.appendChild(x);lb.onclick=function(e){if(e.target===lb)lb.remove();};
-    document.body.appendChild(lb);
-  };
-  window._aprToast=function(msg,err){
-    var t=document.getElementById('atoast');if(!t)return;
-    t.textContent=msg;t.style.background=err?'#dc2626':'#111';
-    t.style.transform='translateY(0)';t.style.opacity='1';
-    setTimeout(function(){t.style.transform='translateY(60px)';t.style.opacity='0';},3000);
-  };
-
-  // aprAction: called by footer buttons
-  window.aprAction=function(piezaId,estado){
-    if(estado==='cambios'){
-      var ta=document.getElementById('acmt-'+piezaId);
-      var sb=document.getElementById('asavebtn-'+piezaId);
-      if(ta){ta.style.display='block';ta.focus();}
-      if(sb)sb.style.display='block';
-    } else {
-      window.aprSave(piezaId,estado);
-    }
-  };
-
-  window.aprSave=async function(piezaId,estadoOverride){
-    var estado=estadoOverride||'cambios';
-    var ta=document.getElementById('acmt-'+piezaId);
-    var comentario=estado==='cambios'&&ta?ta.value.trim():'';
-    var res=await db.from('contenido').update({estado_aprobacion:estado,comentario_cliente:comentario}).eq('id',piezaId);
-    if(res.error){window._aprToast('Error al guardar',true);return;}
-    window._aprToast(estado==='aprobado'?'✓ Aprobado':estado==='pendiente'?'Respuesta eliminada':'Cambios enviados');
-    // Find pieza and rebuild footer
-    var p=all.find(function(x){return x.id===piezaId;});
-    if(p){p.estado_aprobacion=estado;p.comentario_cliente=comentario;rebuildFooter(p);}
-    // Update progress
-    var apr=all.filter(function(x){return x.estado_aprobacion==='aprobado';}).length;
-    var bar=document.getElementById('aprogbar');
-    if(bar)bar.style.width=(total>0?Math.round(apr/total*100):0)+'%';
-  };
-
-  window._aprTab(firstTab);
-
-  db.channel('aprob-'+mesId).on('postgres_changes',{event:'UPDATE',schema:'public',table:'contenido',filter:'mes_id=eq.'+mesId},function(payload){
-    var p=all.find(function(x){return x.id===payload.new.id;});
-    if(p){Object.assign(p,payload.new);rebuildFooter(p);}
+  db.channel('aprob-rt-'+tipo).on('postgres_changes',{event:'UPDATE',schema:'public',table:'contenido',filter:`mes_id=eq.${mesId}`},payload=>{
+    const p=payload.new;const foot=document.getElementById('foot-'+p.id);if(foot)foot.innerHTML=footerBlock(p);
   }).subscribe();
 }
-
 
 function setAprob(piezaId,estado){
   const comment=document.getElementById('comment-'+piezaId);
@@ -1807,12 +1692,14 @@ function showToast(msg,isError=false){const t=document.getElementById('toast');i
 function setPlanFilter(type,val,el){
   const area=document.getElementById('planListArea');if(!area)return;
   const group=el.closest('.plan-filter-bar');
-  // deactivate siblings in same group
-  const prefix=type==='estado'?['Todos','Pendiente','En curso','En revisión','Listo']:['Todas','Alta','Media','Baja'];
-  if(group){group.querySelectorAll('.plan-filter-chip').forEach(c=>{if(prefix.includes(c.textContent))c.classList.remove('active');});}
+  if(group){
+    // Only deactivate chips in same type group by checking data-filter attr
+    group.querySelectorAll('.plan-filter-chip[data-filter="'+type+'"]').forEach(c=>c.classList.remove('active'));
+  }
   el.classList.add('active');
   if(type==='estado')area.dataset.filterEstado=val;
-  else area.dataset.filterPrio=val;
+  else if(type==='prio')area.dataset.filterPrio=val;
+  else area.dataset.filterTipo=val;
   renderPlanListNew();
 }
 function setDialFilter(type,val,el){
@@ -1998,11 +1885,10 @@ function renderPlanListNew(){
     area.innerHTML='<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div class="empty-title">Sin piezas</div><div class="empty-sub">Agrega reels, posts o carruseles.</div><button class="btn btn-primary" onclick="openPlanPanel()">+ Nueva pieza</button></div>';return;
   }
   const tipIcon={reel:'🎬',post:'🖼️',carrusel:'📑'};
-  // Bulk bar
   area.innerHTML=`
     <div class="bulk-bar" id="planBulkBar">
       <span id="planBulkCount">0 seleccionados</span>
-      <button class="btn btn-sm" style="background:#dc2626;color:#fff;border:none;cursor:pointer" onclick="deletePlanSelected()">🗑 Eliminar seleccionados</button>
+      <button class="btn btn-sm" style="background:#dc2626;color:#fff;border:none;cursor:pointer;font-family:inherit" onclick="deletePlanSelected()">🗑 Eliminar seleccionados</button>
       <button class="btn btn-ghost btn-sm" onclick="clearPlanSelection()">Cancelar</button>
     </div>
     <div id="planSortable">
@@ -2012,16 +1898,16 @@ function renderPlanListNew(){
           ondragover="planDragOver(event)"
           ondrop="planDrop(event,'${c.id}')"
           ondragend="planDragEnd()">
-          <div class="plan-drag-handle" onclick="event.stopPropagation()" title="Arrastrar para reordenar">⠿</div>
-          <div onclick="event.stopPropagation()">
+          <div class="plan-drag-handle" onclick="event.stopPropagation()" title="Arrastrar">⠿</div>
+          <div onclick="event.stopPropagation()" style="display:flex;align-items:center;padding:0 4px 0 0">
             <input type="checkbox" class="plan-check plan-row-check" data-id="${c.id}" onchange="onPlanCheck()">
           </div>
           <div class="plan-row-accent ${c.tipo}"></div>
           <div class="plan-row-body" onclick="openPlanPanelById('${c.id}')">
-            <div class="plan-row-icon ${c.tipo}">${tipIcon[c.tipo]||'📄'}</div>
+            <div class="plan-row-icon">${tipIcon[c.tipo]||'📄'}</div>
             <div class="plan-row-info">
               <div class="plan-row-titulo">${c.tema?esc(c.tema):'Sin título'}</div>
-              <div class="plan-row-sub">${TIPO_LBL[c.tipo]||c.tipo}${c.copy?' · '+esc(c.copy).substring(0,45)+'…':''}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,30)+'…':''}</div>
+              <div class="plan-row-sub">${TIPO_LBL[c.tipo]||c.tipo}${c.copy?' · '+esc(c.copy).substring(0,40)+'…':''}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,25)+'…':''}</div>
             </div>
             <div class="plan-row-badges">
               <div class="plan-row-ap ${c.estado_aprobacion||'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':'Pendiente'}"></div>
@@ -2029,16 +1915,14 @@ function renderPlanListNew(){
               <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
             </div>
           </div>
-          <button class="icon-btn del" onclick="event.stopPropagation();deletePlanPieza('${c.id}')" title="Eliminar">
+          <button class="icon-btn del" onclick="event.stopPropagation();deletePlanPieza('${c.id}')" title="Eliminar" style="margin-right:12px">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h2M4 5h12M6 5v11a2 2 0 002 2h4a2 2 0 002-2V5"/></svg>
           </button>
         </div>`).join('')}
       <div class="list-add-row" onclick="openPlanPanel()">
         <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar pieza
       </div>
-    </div>`;
-}
-
+    </div>`;}
 
 function renderDialListNew(){
   const area=document.getElementById('dialListArea');if(!area)return;
@@ -2376,11 +2260,11 @@ function clearPlanSelection(){
 async function deletePlanSelected(){
   const checked=Array.from(document.querySelectorAll('.plan-row-check:checked'));
   if(!checked.length)return;
-  if(!confirm(`¿Eliminar ${checked.length} pieza${checked.length!==1?'s':''}?`))return;
+  if(!confirm('¿Eliminar '+checked.length+' pieza'+(checked.length!==1?'s':'')+'?'))return;
   const ids=checked.map(c=>c.dataset.id);
   for(const id of ids)await db.from('contenido').delete().eq('id',id);
   allPlanContenido=allPlanContenido.filter(c=>!ids.includes(c.id));
-  showToast(`${ids.length} pieza${ids.length!==1?'s':''} eliminada${ids.length!==1?'s':''}`);
+  showToast(ids.length+' pieza'+(ids.length!==1?'s':'')+' eliminada'+(ids.length!==1?'s':''));
   renderPlanListNew();
 }
 async function deletePlanPieza(id){
@@ -2388,22 +2272,17 @@ async function deletePlanPieza(id){
   const{error}=await db.from('contenido').delete().eq('id',id);
   if(error){showToast('Error al eliminar',true);return;}
   allPlanContenido=allPlanContenido.filter(c=>c.id!==id);
-  showToast('Pieza eliminada');
-  renderPlanListNew();
+  showToast('Pieza eliminada');renderPlanListNew();
 }
-
-// ── DRAG & DROP REORDER ──
 let _dragId=null;
 function planDragStart(e,id){
-  _dragId=id;
-  e.dataTransfer.effectAllowed='move';
+  _dragId=id;e.dataTransfer.effectAllowed='move';
   setTimeout(()=>{const el=document.getElementById('prow-'+id);if(el)el.classList.add('dragging');},0);
 }
 function planDragOver(e){
   e.preventDefault();e.dataTransfer.dropEffect='move';
-  // Highlight drop target
   document.querySelectorAll('.plan-row').forEach(r=>r.classList.remove('drag-over'));
-  const row=e.currentTarget;if(row&&row.id!=='prow-'+_dragId)row.classList.add('drag-over');
+  if(e.currentTarget.id!=='prow-'+_dragId)e.currentTarget.classList.add('drag-over');
 }
 function planDragEnd(){
   document.querySelectorAll('.plan-row').forEach(r=>{r.classList.remove('dragging');r.classList.remove('drag-over');});
@@ -2412,13 +2291,12 @@ function planDrop(e,targetId){
   e.preventDefault();
   document.querySelectorAll('.plan-row').forEach(r=>r.classList.remove('drag-over'));
   if(!_dragId||_dragId===targetId)return;
-  const fromIdx=allPlanContenido.findIndex(c=>c.id===_dragId);
-  const toIdx=allPlanContenido.findIndex(c=>c.id===targetId);
-  if(fromIdx===-1||toIdx===-1)return;
-  const moved=allPlanContenido.splice(fromIdx,1)[0];
-  allPlanContenido.splice(toIdx,0,moved);
-  renderPlanListNew();
-  _dragId=null;
+  const fi=allPlanContenido.findIndex(c=>c.id===_dragId);
+  const ti=allPlanContenido.findIndex(c=>c.id===targetId);
+  if(fi===-1||ti===-1)return;
+  const moved=allPlanContenido.splice(fi,1)[0];
+  allPlanContenido.splice(ti,0,moved);
+  _dragId=null;renderPlanListNew();
 }
 
 // ── INIT ──
@@ -2432,6 +2310,7 @@ async function init(){
   // Restore saved user
   const savedUser=localStorage.getItem('conception_user');
   if(savedUser&&allEmpleados.find(e=>e.id===savedUser)){currentUserId=savedUser;updateCurrentUserDisplay();}
+  populateIAClientes();
   switchTab('clientes');
 }
 
