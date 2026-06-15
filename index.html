@@ -761,23 +761,7 @@ textarea.form-input{resize:vertical;}
 <div class="panel" id="planPanel">
   <div class="panel-head">
     <div><div class="panel-title" id="planPanelTitle">Nueva pieza</div><div class="panel-sub" id="planPanelSub"></div></div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em">Estado</span>
-          <select class="form-select" id="pp-estado" style="padding:4px 28px 4px 8px;font-size:12.5px;border-radius:6px;min-width:110px">
-            <option value="pendiente">Pendiente</option><option value="proceso">En curso</option><option value="revision">En revisión</option><option value="listo">Listo</option>
-          </select>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em">Prioridad</span>
-          <select class="form-select" id="pp-prioridad" style="padding:4px 28px 4px 8px;font-size:12.5px;border-radius:6px;min-width:110px">
-            <option value="media">Media</option><option value="alta">Alta</option><option value="baja">Baja</option>
-          </select>
-        </div>
-      </div>
-      <button class="modal-close" onclick="closePlanPanel()">×</button>
-    </div>
+    <button class="modal-close" onclick="closePlanPanel()">×</button>
   </div>
   <div class="panel-body">
     <div>
@@ -1192,19 +1176,6 @@ function renderPlanMain(){
       <div><div class="plan-cliente-name">${esc(activePlanCliente.empresa)}</div><div class="plan-cliente-sub">${activePlanMesId?(allPlanMeses.find(m=>m.id===activePlanMesId)?.nombre||''):'Selecciona un mes'}</div></div>
       <div class="plan-header-right">
         ${activePlanMesId?`
-          <select id="planFilterEstado" onchange="setPlanFilter('estado',this.value,this)" style="padding:6px 10px;border:1px solid var(--gray-200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--gray-600);background:#fff;cursor:pointer;outline:none">
-            <option value="todos">Todos los estados</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="proceso">En curso</option>
-            <option value="revision">En revisión</option>
-            <option value="listo">Listo</option>
-          </select>
-          <select id="planFilterPrio" onchange="setPlanFilter('prio',this.value,this)" style="padding:6px 10px;border:1px solid var(--gray-200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--gray-600);background:#fff;cursor:pointer;outline:none">
-            <option value="todas">Todas las prioridades</option>
-            <option value="alta">Alta</option>
-            <option value="media">Media</option>
-            <option value="baja">Baja</option>
-          </select>
           <button class="btn btn-ghost btn-sm" onclick="copiarLinkPlan()"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 5H6a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v2"/></svg>Link cliente</button>
           <button class="btn btn-primary btn-sm" onclick="openPlanPanel()">+ Nueva pieza</button>`:''}
       </div>
@@ -1216,7 +1187,7 @@ function renderPlanMain(){
     ${activePlanMesId?`
     <div class="mes-info-bar" id="planMesInfoBar">
       <div class="mes-info-item">
-        <span class="mes-info-label">Responsable general</span>
+        <span class="mes-info-label">Responsable</span>
         <select class="mes-info-select" id="plan-mes-resp" onchange="saveMesInfo('${activePlanMesId}','responsable_id',this.value)">
           <option value="">Sin asignar</option>
           ${allEmpleados.filter(e=>e.activo!==false).map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}
@@ -1226,8 +1197,25 @@ function renderPlanMain(){
         <span class="mes-info-label">Fecha de entrega</span>
         <input type="date" class="mes-info-input" id="plan-mes-fecha" onchange="saveMesInfo('${activePlanMesId}','fecha_entrega',this.value)">
       </div>
+      <div class="mes-info-item">
+        <span class="mes-info-label">Estado</span>
+        <select class="mes-info-select" id="plan-mes-estado" onchange="saveMesInfo('${activePlanMesId}','estado_interno',this.value)">
+          <option value="pendiente">Pendiente</option>
+          <option value="proceso">En curso</option>
+          <option value="revision">En revisión</option>
+          <option value="listo">Listo</option>
+        </select>
+      </div>
+      <div class="mes-info-item">
+        <span class="mes-info-label">Prioridad</span>
+        <select class="mes-info-select" id="plan-mes-prio" onchange="saveMesInfo('${activePlanMesId}','prioridad',this.value)">
+          <option value="media">Media</option>
+          <option value="alta">Alta</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
       <div class="mes-info-item" style="flex:1">
-        <span class="mes-info-label">Notas del mes</span>
+        <span class="mes-info-label">Notas</span>
         <input type="text" class="mes-info-input" id="plan-mes-notas" placeholder="Observaciones generales…" onblur="saveMesInfo('${activePlanMesId}','notas',this.value)" style="width:100%">
       </div>
     </div>
@@ -1299,8 +1287,7 @@ function openPlanPanel(pieza=null){
   document.getElementById('pp-copy').value=pieza?.copy||'';
   document.getElementById('pp-notas').value=pieza?.notas_internas||'';
   document.getElementById('pp-fecha').value=pieza?.fecha_entrega||'';
-  document.getElementById('pp-prioridad').value=pieza?.prioridad||'media';
-  document.getElementById('pp-estado').value=pieza?.estado_interno||'pendiente';
+
   document.getElementById('pp-responsable').value=pieza?.responsable_id||'';
   const fb=document.getElementById('pp-feedback-section');
   const ft=document.getElementById('pp-feedback-text');
@@ -1368,7 +1355,7 @@ function renderPlanMediaPreview(){
 
 async function savePlanPieza(){
   if(!activePlanMesId){showToast('Selecciona un mes primero',true);return;}
-  const payload={mes_id:activePlanMesId,cliente_id:activePlanCliente.id,tipo:currentPlanTipo,tema:document.getElementById('pp-tema').value.trim(),copy:document.getElementById('pp-copy').value.trim(),notas_internas:document.getElementById('pp-notas').value.trim(),prioridad:document.getElementById('pp-prioridad').value,estado_interno:document.getElementById('pp-estado').value,media_urls:uploadedUrls,media_tipo:currentPlanTipo,dialogos:''};
+  const payload={mes_id:activePlanMesId,cliente_id:activePlanCliente.id,tipo:currentPlanTipo,tema:document.getElementById('pp-tema').value.trim(),copy:document.getElementById('pp-copy').value.trim(),notas_internas:document.getElementById('pp-notas').value.trim(),media_urls:uploadedUrls,media_tipo:currentPlanTipo,dialogos:''};
   let error;
   if(editingPlanId){({error}=await db.from('contenido').update(payload).eq('id',editingPlanId));}
   else{({error}=await db.from('contenido').insert(payload));}
@@ -1694,12 +1681,18 @@ function setDialFilter(type,val,el){
 
 // ── MES INFO LOAD ──
 async function loadMesInfoPlan(mesId){
-  const{data}=await db.from('meses').select('responsable_id,fecha_entrega,notas').eq('id',mesId).single();
+  const{data}=await db.from('meses').select('responsable_id,fecha_entrega,notas,estado_interno,prioridad').eq('id',mesId).single();
   if(!data)return;
-  const r=document.getElementById('plan-mes-resp');const f=document.getElementById('plan-mes-fecha');const n=document.getElementById('plan-mes-notas');
+  const r=document.getElementById('plan-mes-resp');
+  const f=document.getElementById('plan-mes-fecha');
+  const n=document.getElementById('plan-mes-notas');
+  const e=document.getElementById('plan-mes-estado');
+  const p=document.getElementById('plan-mes-prio');
   if(r&&data.responsable_id)r.value=data.responsable_id;
   if(f&&data.fecha_entrega)f.value=data.fecha_entrega;
   if(n&&data.notas)n.value=data.notas;
+  if(e&&data.estado_interno)e.value=data.estado_interno;
+  if(p&&data.prioridad)p.value=data.prioridad;
 }
 async function loadMesInfoDial(mesId){
   const{data}=await db.from('meses').select('responsable_id,fecha_entrega,notas').eq('id',mesId).single();
