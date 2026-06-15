@@ -1890,8 +1890,6 @@ function renderPlanListNew(){
             </div>
             <div class="plan-row-badges">
               <div class="plan-row-ap ${c.estado_aprobacion||'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':'Pendiente'}"></div>
-              <span class="${PR_CLS[c.prioridad]||'pr-media'}">${PR_LABEL[c.prioridad]||'Media'}</span>
-              <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
             </div>
           </div>
           <button class="icon-btn del" onclick="event.stopPropagation();deletePlanPieza('${c.id}')" title="Eliminar" style="margin-right:12px">
