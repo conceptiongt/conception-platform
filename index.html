@@ -1984,40 +1984,61 @@ function renderPlanListNew(){
   const area=document.getElementById('planListArea');if(!area)return;
   const estadoFilter=area.dataset.filterEstado||'todos';
   const prioFilter=area.dataset.filterPrio||'todas';
+  const tipoFilter=area.dataset.filterTipo||'todos';
   let items=allPlanContenido.filter(c=>{
     const me=estadoFilter==='todos'||c.estado_interno===estadoFilter;
     const mp=prioFilter==='todas'||c.prioridad===prioFilter;
-    return me&&mp;
+    const mt=tipoFilter==='todos'||c.tipo===tipoFilter;
+    return me&&mp&&mt;
   });
   if(!items.length&&allPlanContenido.length){
-    area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-title">Sin resultados</div><div class="empty-sub">Prueba otro filtro.</div></div></div>`;return;
+    area.innerHTML='<div class="empty-state"><div class="empty-title">Sin resultados</div><div class="empty-sub">Prueba otro filtro.</div></div>';return;
   }
   if(!items.length){
-    area.innerHTML=`<div class="plan-list-wrap"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div class="empty-title">Sin piezas</div><div class="empty-sub">Agrega reels, posts o carruseles.</div><button class="btn btn-primary" onclick="openPlanPanel()">+ Nueva pieza</button></div></div>`;return;
+    area.innerHTML='<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div class="empty-title">Sin piezas</div><div class="empty-sub">Agrega reels, posts o carruseles.</div><button class="btn btn-primary" onclick="openPlanPanel()">+ Nueva pieza</button></div>';return;
   }
   const tipIcon={reel:'🎬',post:'🖼️',carrusel:'📑'};
-  area.innerHTML=`<div>
-    ${items.map(c=>`
-      <div class="plan-row" onclick="openPlanPanelById('${c.id}')">
-        <div class="plan-row-accent ${c.tipo}"></div>
-        <div class="plan-row-body">
-          <div class="plan-row-icon">${tipIcon[c.tipo]||'📄'}</div>
-          <div class="plan-row-info">
-            <div class="plan-row-titulo">${c.tema?esc(c.tema):'Sin título'}</div>
-            <div class="plan-row-sub">${TIPO_LBL[c.tipo]||c.tipo}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,40)+'…':''}</div>
-          </div>
-          <div class="plan-row-badges">
-            <span class="${PR_CLS[c.prioridad]||'pr-media'}">${PR_LABEL[c.prioridad]||'Media'}</span>
-            <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
-          </div>
-        </div>
-      </div>`).join('')}
-    <div class="list-add-row" onclick="openPlanPanel()">
-      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar pieza
+  // Bulk bar
+  area.innerHTML=`
+    <div class="bulk-bar" id="planBulkBar">
+      <span id="planBulkCount">0 seleccionados</span>
+      <button class="btn btn-sm" style="background:#dc2626;color:#fff;border:none;cursor:pointer" onclick="deletePlanSelected()">🗑 Eliminar seleccionados</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearPlanSelection()">Cancelar</button>
     </div>
-  </div>`;
-
+    <div id="planSortable">
+      ${items.map(c=>`
+        <div class="plan-row" id="prow-${c.id}" draggable="true"
+          ondragstart="planDragStart(event,'${c.id}')"
+          ondragover="planDragOver(event)"
+          ondrop="planDrop(event,'${c.id}')"
+          ondragend="planDragEnd()">
+          <div class="plan-drag-handle" onclick="event.stopPropagation()" title="Arrastrar para reordenar">⠿</div>
+          <div onclick="event.stopPropagation()">
+            <input type="checkbox" class="plan-check plan-row-check" data-id="${c.id}" onchange="onPlanCheck()">
+          </div>
+          <div class="plan-row-accent ${c.tipo}"></div>
+          <div class="plan-row-body" onclick="openPlanPanelById('${c.id}')">
+            <div class="plan-row-icon ${c.tipo}">${tipIcon[c.tipo]||'📄'}</div>
+            <div class="plan-row-info">
+              <div class="plan-row-titulo">${c.tema?esc(c.tema):'Sin título'}</div>
+              <div class="plan-row-sub">${TIPO_LBL[c.tipo]||c.tipo}${c.copy?' · '+esc(c.copy).substring(0,45)+'…':''}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,30)+'…':''}</div>
+            </div>
+            <div class="plan-row-badges">
+              <div class="plan-row-ap ${c.estado_aprobacion||'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':'Pendiente'}"></div>
+              <span class="${PR_CLS[c.prioridad]||'pr-media'}">${PR_LABEL[c.prioridad]||'Media'}</span>
+              <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
+            </div>
+          </div>
+          <button class="icon-btn del" onclick="event.stopPropagation();deletePlanPieza('${c.id}')" title="Eliminar">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h2M4 5h12M6 5v11a2 2 0 002 2h4a2 2 0 002-2V5"/></svg>
+          </button>
+        </div>`).join('')}
+      <div class="list-add-row" onclick="openPlanPanel()">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar pieza
+      </div>
+    </div>`;
 }
+
 
 function renderDialListNew(){
   const area=document.getElementById('dialListArea');if(!area)return;
@@ -2337,6 +2358,67 @@ async function eliminarGancho(id){
   if(!confirm('¿Eliminar este gancho?'))return;
   await db.from('ganchos').delete().eq('id',id);
   showToast('Gancho eliminado');loadMisGanchos();
+}
+
+// ── PLAN MULTI-SELECT & DRAG ──
+function onPlanCheck(){
+  const checked=document.querySelectorAll('.plan-row-check:checked');
+  const bar=document.getElementById('planBulkBar');
+  const count=document.getElementById('planBulkCount');
+  if(bar)bar.classList.toggle('show',checked.length>0);
+  if(count)count.textContent=checked.length+' seleccionado'+(checked.length!==1?'s':'');
+}
+function clearPlanSelection(){
+  document.querySelectorAll('.plan-row-check').forEach(c=>c.checked=false);
+  const bar=document.getElementById('planBulkBar');
+  if(bar)bar.classList.remove('show');
+}
+async function deletePlanSelected(){
+  const checked=Array.from(document.querySelectorAll('.plan-row-check:checked'));
+  if(!checked.length)return;
+  if(!confirm(`¿Eliminar ${checked.length} pieza${checked.length!==1?'s':''}?`))return;
+  const ids=checked.map(c=>c.dataset.id);
+  for(const id of ids)await db.from('contenido').delete().eq('id',id);
+  allPlanContenido=allPlanContenido.filter(c=>!ids.includes(c.id));
+  showToast(`${ids.length} pieza${ids.length!==1?'s':''} eliminada${ids.length!==1?'s':''}`);
+  renderPlanListNew();
+}
+async function deletePlanPieza(id){
+  if(!confirm('¿Eliminar esta pieza?'))return;
+  const{error}=await db.from('contenido').delete().eq('id',id);
+  if(error){showToast('Error al eliminar',true);return;}
+  allPlanContenido=allPlanContenido.filter(c=>c.id!==id);
+  showToast('Pieza eliminada');
+  renderPlanListNew();
+}
+
+// ── DRAG & DROP REORDER ──
+let _dragId=null;
+function planDragStart(e,id){
+  _dragId=id;
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>{const el=document.getElementById('prow-'+id);if(el)el.classList.add('dragging');},0);
+}
+function planDragOver(e){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  // Highlight drop target
+  document.querySelectorAll('.plan-row').forEach(r=>r.classList.remove('drag-over'));
+  const row=e.currentTarget;if(row&&row.id!=='prow-'+_dragId)row.classList.add('drag-over');
+}
+function planDragEnd(){
+  document.querySelectorAll('.plan-row').forEach(r=>{r.classList.remove('dragging');r.classList.remove('drag-over');});
+}
+function planDrop(e,targetId){
+  e.preventDefault();
+  document.querySelectorAll('.plan-row').forEach(r=>r.classList.remove('drag-over'));
+  if(!_dragId||_dragId===targetId)return;
+  const fromIdx=allPlanContenido.findIndex(c=>c.id===_dragId);
+  const toIdx=allPlanContenido.findIndex(c=>c.id===targetId);
+  if(fromIdx===-1||toIdx===-1)return;
+  const moved=allPlanContenido.splice(fromIdx,1)[0];
+  allPlanContenido.splice(toIdx,0,moved);
+  renderPlanListNew();
+  _dragId=null;
 }
 
 // ── INIT ──
