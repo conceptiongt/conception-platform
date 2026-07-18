@@ -439,6 +439,7 @@ textarea.form-input{resize:vertical;}
 .bulk-bar.show{display:flex;}
 .plan-row .icon-btn.del{opacity:0;transition:opacity .15s;}
 .plan-row:hover .icon-btn.del{opacity:1;}
+.plan-row:hover .icon-btn{opacity:1;}
 </style>
 </head>
 <body>
@@ -1392,7 +1393,7 @@ async function selectDialClienteById(id){
   renderDialClienteList();await loadDialMeses(c.id);renderDialMain();
 }
 async function loadDialMeses(cid){const{data}=await db.from('meses').select('*').eq('cliente_id',cid).eq('tipo','dial').order('created_at');allDialMeses=data||[];}
-async function loadDialContenido(mid){const{data}=await db.from('contenido').select('*').eq('mes_id',mid).eq('tipo','reel').order('created_at');allDialContenido=data||[];}
+async function loadDialContenido(mid){const{data}=await db.from('contenido').select('*').eq('mes_id',mid).eq('tipo','dialogo').order('created_at');allDialContenido=data||[];}
 
 function renderDialMain(){
   const main=document.getElementById('dialMain');
@@ -1500,30 +1501,31 @@ function openDialPanel(pieza=null){
   document.getElementById('dialPanelSub').textContent=(activDialCliente?.empresa||'')+(activDialMesId?' · '+(allDialMeses.find(m=>m.id===activDialMesId)?.nombre||''):'');
   document.getElementById('dp-tema').value=pieza?.tema||'';
   document.getElementById('dp-dialogos').value=pieza?.dialogos||'';
-  document.getElementById('dp-fecha').value=pieza?.fecha_entrega||'';
-  document.getElementById('dp-prioridad').value=pieza?.prioridad||'media';
-  document.getElementById('dp-estado').value=pieza?.estado_interno||'pendiente';
-  document.getElementById('dp-responsable').value=pieza?.responsable_id||'';
-  document.getElementById('dp-dial-result').style.display='none';
-  document.getElementById('dp-dial-prompt').value='';
   const fb=document.getElementById('dp-feedback-section');
   const ft=document.getElementById('dp-feedback-text');
   if(pieza?.estado_aprobacion==='cambios'&&pieza?.comentario_cliente){fb.style.display='';ft.textContent='"'+pieza.comentario_cliente+'"';}
   else{fb.style.display='none';}
   document.getElementById('dialPanelOverlay').classList.add('open');
   document.getElementById('dialPanel').classList.add('open');
+  setTimeout(()=>document.getElementById('dp-dialogos').focus(),300);
 }
 function closeDialPanel(){document.getElementById('dialPanelOverlay').classList.remove('open');document.getElementById('dialPanel').classList.remove('open');}
+async function deleteDialPieza(id){
+  if(!confirm('¿Eliminar este diálogo?'))return;
+  await db.from('contenido').delete().eq('id',id);
+  allDialContenido=allDialContenido.filter(c=>c.id!==id);
+  showToast('Diálogo eliminado');renderDialListNew();
+}
 
 async function saveDialPieza(){
   if(!activDialMesId){showToast('Selecciona un mes primero',true);return;}
-  const payload={mes_id:activDialMesId,cliente_id:activDialCliente.id,tipo:'reel',tema:document.getElementById('dp-tema').value.trim(),dialogos:document.getElementById('dp-dialogos').value.trim(),prioridad:document.getElementById('dp-prioridad').value,estado_interno:document.getElementById('dp-estado').value,copy:'',notas_internas:'',media_urls:[],estado_aprobacion:'pendiente'};
+  const payload={mes_id:activDialMesId,cliente_id:activDialCliente.id,tipo:'dialogo',tema:document.getElementById('dp-tema').value.trim(),dialogos:document.getElementById('dp-dialogos').value.trim(),copy:'',notas_internas:'',media_urls:[],prioridad:'media',estado_interno:'pendiente'};
   let error;
   if(editingDialId){({error}=await db.from('contenido').update(payload).eq('id',editingDialId));}
-  else{({error}=await db.from('contenido').insert(payload));}
+  else{payload.estado_aprobacion='pendiente';({error}=await db.from('contenido').insert(payload));}
   if(error){showToast('Error: '+error.message,true);return;}
   showToast(editingDialId?'Diálogo actualizado':'Diálogo guardado');
-  closeDialPanel();await loadDialContenido(activDialMesId);renderDialList();
+  closeDialPanel();await loadDialContenido(activDialMesId);renderDialListNew();
 }
 
 async function generateDialCopy(){
@@ -1571,7 +1573,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
   document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f3"><div style="text-align:center;font-family:sans-serif"><div style="width:26px;height:26px;border:3px solid #eee;border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px"></div><div style="font-size:13px;color:#999">Cargando...</div></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
 
   let q=db.from('contenido').select('*').eq('mes_id',mesId).order('tipo').order('created_at');
-  if(tipo==='2')q=q.eq('tipo','reel');
+  if(tipo==='2')q=q.eq('tipo','dialogo');
   const [{data:cliente},{data:mes},{data:piezas}]=await Promise.all([
     db.from('clientes').select('*').eq('id',clienteId).single(),
     db.from('meses').select('*').eq('id',mesId).single(),
@@ -2058,19 +2060,21 @@ function renderDialListNew(){
   }
   area.innerHTML=`<div>
     ${items.map(c=>`
-      <div class="plan-row" onclick="openDialPanelById('${c.id}')">
+      <div class="plan-row" id="drow-${c.id}" onclick="openDialPanelById('${c.id}')">
         <div class="plan-row-accent dialogo"></div>
         <div class="plan-row-body">
-          <div class="plan-row-icon">🎬</div>
+          <div class="plan-row-icon">📝</div>
           <div class="plan-row-info">
             <div class="plan-row-titulo">${c.tema?esc(c.tema):'Sin título'}</div>
-            <div class="plan-row-sub">${c.dialogos?esc(c.dialogos).substring(0,60)+'…':'Sin diálogos aún'}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,30)+'…':''}</div>
+            <div class="plan-row-sub">${c.dialogos?esc(c.dialogos).substring(0,70)+'…':'Sin contenido aún'}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,25)+'…':''}</div>
           </div>
           <div class="plan-row-badges">
-            <span class="${PR_CLS[c.prioridad]||'pr-media'}">${PR_LABEL[c.prioridad]||'Media'}</span>
-            <span class="${ST_CLS[c.estado_interno]||'st-pendiente'}">${ST_LABEL[c.estado_interno]||'Pendiente'}</span>
+            <div class="plan-row-ap ${c.estado_aprobacion==='aprobado'?'aprobado':c.estado_aprobacion==='cambios'?'cambios':c.estado_aprobacion==='realizado'?'realizado':'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':c.estado_aprobacion==='realizado'?'Cambios realizados':'Pendiente'}"></div>
           </div>
         </div>
+        <button class="icon-btn del" onclick="event.stopPropagation();deleteDialPieza('${c.id}')" title="Eliminar" style="margin-right:12px;opacity:0;transition:opacity .15s">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h2M4 5h12M6 5v11a2 2 0 002 2h4a2 2 0 002-2V5"/></svg>
+        </button>
       </div>`).join('')}
     <div class="list-add-row" onclick="openDialPanel()">
       <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>Agregar diálogo
