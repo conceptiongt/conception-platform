@@ -430,6 +430,7 @@ textarea.form-input{resize:vertical;}
 .plan-row-ap{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .plan-row-ap.aprobado{background:#16a34a;}
 .plan-row-ap.cambios{background:#dc2626;}
+.plan-row-ap.realizado{background:#7c3aed;}
 .plan-row-ap.pendiente{background:var(--gray-200);}
 .plan-check{width:15px;height:15px;cursor:pointer;accent-color:var(--black);flex-shrink:0;margin-right:8px;}
 .plan-row.dragging{opacity:.35;}
@@ -1149,7 +1150,7 @@ async function selectPlanClienteById(id){
   await loadPlanMeses(c.id);
   renderPlanMain();
 }
-async function loadPlanMeses(cid){const{data}=await db.from('meses').select('*').eq('cliente_id',cid).order('created_at');allPlanMeses=data||[];}
+async function loadPlanMeses(cid){const{data}=await db.from('meses').select('*').eq('cliente_id',cid).neq('tipo','dial').order('created_at');allPlanMeses=data||[];}
 async function loadPlanContenido(mid){const{data}=await db.from('contenido').select('*').eq('mes_id',mid).order('created_at');allPlanContenido=data||[];}
 
 const ST_LABEL={pendiente:'Pendiente',proceso:'En curso',revision:'En revisión',listo:'Listo'};
@@ -1181,7 +1182,13 @@ function renderPlanMain(){
       </div>
     </div>
     <div class="meses-tabs">
-      ${allPlanMeses.map(m=>`<button class="mes-tab ${m.id===activePlanMesId?'active':''}" onclick="selectPlanMes('${m.id}')">${esc(m.nombre)}</button>`).join('')}
+      ${allPlanMeses.map(m=>`<div style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0">
+        <button class="mes-tab ${m.id===activePlanMesId?'active':''}" onclick="selectPlanMes('${m.id}')">${esc(m.nombre)}</button>
+        <div style="display:inline-flex;gap:1px;opacity:.5;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.5'">
+          <button onclick="renameMes('${m.id}','plan')" title="Renombrar" style="border:none;background:none;cursor:pointer;font-size:12px;padding:2px 4px;color:var(--gray-600)">✏️</button>
+          <button onclick="deleteMes('${m.id}','plan')" title="Eliminar mes" style="border:none;background:none;cursor:pointer;font-size:12px;padding:2px 4px;color:var(--red)">🗑</button>
+        </div>
+      </div>`).join('')}
       <button class="mes-tab-add" onclick="openMesModal('plan')">+ Nuevo mes</button>
     </div>
     ${activePlanMesId?`
@@ -1384,7 +1391,7 @@ async function selectDialClienteById(id){
   activDialCliente=c;activDialMesId=null;
   renderDialClienteList();await loadDialMeses(c.id);renderDialMain();
 }
-async function loadDialMeses(cid){const{data}=await db.from('meses').select('*').eq('cliente_id',cid).order('created_at');allDialMeses=data||[];}
+async function loadDialMeses(cid){const{data}=await db.from('meses').select('*').eq('cliente_id',cid).eq('tipo','dial').order('created_at');allDialMeses=data||[];}
 async function loadDialContenido(mid){const{data}=await db.from('contenido').select('*').eq('mes_id',mid).eq('tipo','reel').order('created_at');allDialContenido=data||[];}
 
 function renderDialMain(){
@@ -1398,7 +1405,13 @@ function renderDialMain(){
       </div>
     </div>
     <div class="meses-tabs">
-      ${allDialMeses.map(m=>`<button class="mes-tab ${m.id===activDialMesId?'active':''}" onclick="selectDialMes('${m.id}')">${esc(m.nombre)}</button>`).join('')}
+      ${allDialMeses.map(m=>`<div style="display:inline-flex;align-items:center;gap:2px;flex-shrink:0">
+        <button class="mes-tab ${m.id===activDialMesId?'active':''}" onclick="selectDialMes('${m.id}')">${esc(m.nombre)}</button>
+        <div style="display:inline-flex;gap:1px;opacity:.5;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.5'">
+          <button onclick="renameMes('${m.id}','dial')" title="Renombrar" style="border:none;background:none;cursor:pointer;font-size:12px;padding:2px 4px;color:var(--gray-600)">✏️</button>
+          <button onclick="deleteMes('${m.id}','dial')" title="Eliminar mes" style="border:none;background:none;cursor:pointer;font-size:12px;padding:2px 4px;color:var(--red)">🗑</button>
+        </div>
+      </div>`).join('')}
       <button class="mes-tab-add" onclick="openMesModal('dial')">+ Nuevo mes</button>
     </div>
     ${activDialMesId?`
@@ -1542,7 +1555,8 @@ async function saveMes(){
   const nombre=document.getElementById('f-mes-nombre').value.trim();if(!nombre){showToast('Ingresa un nombre',true);return;}
   const clienteId=mesMode==='plan'?activePlanCliente?.id:activDialCliente?.id;
   if(!clienteId){showToast('Selecciona un cliente primero',true);return;}
-  const{error}=await db.from('meses').insert({cliente_id:clienteId,nombre});
+  const mesTipo=mesMode==='dial'?'dial':'plan';
+  const{error}=await db.from('meses').insert({cliente_id:clienteId,nombre,tipo:mesTipo});
   if(error){showToast('Error: '+error.message,true);return;}
   showToast('Carpeta creada');closeModal('modalMes');
   if(mesMode==='plan'){await loadPlanMeses(clienteId);activePlanMesId=allPlanMeses[allPlanMeses.length-1]?.id;renderPlanMain();}
@@ -1577,29 +1591,42 @@ async function loadAprobacion(tipo,clienteId,mesId){
   function rebuildFooter(p){
     const foot=document.getElementById('afoot-'+p.id);
     if(!foot)return;
-    const isAp=p.estado_aprobacion==='aprobado', isCa=p.estado_aprobacion==='cambios';
-    const btnStyle='flex:1;padding:12px;border-radius:10px;border:2px solid;font-size:13px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif;transition:all .18s';
+    const isAp=p.estado_aprobacion==='aprobado';
+    const isCa=p.estado_aprobacion==='cambios';
+    const isRe=p.estado_aprobacion==='realizado';
+    const btnStyle='flex:1;padding:11px;border-radius:10px;border:2px solid;font-size:12.5px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif;transition:all .18s';
     foot.innerHTML='';
-    const row=document.createElement('div'); row.style.cssText='display:flex;gap:10px';
+    const row=document.createElement('div'); row.style.cssText='display:flex;gap:8px';
+    // Aprobar
     const ok=document.createElement('button');
     ok.style.cssText=btnStyle+';background:'+(isAp?'#16a34a':'#fff')+';color:'+(isAp?'#fff':'#16a34a')+';border-color:#16a34a';
-    ok.textContent=isAp?'✓ Aprobado ✓':'✓ Aprobar';
+    ok.textContent=isAp?'✓ Aprobado':'✓ Aprobar';
     ok.onclick=function(){aprAction(p.id,isAp?'pendiente':'aprobado');};
+    // Solicitar cambios
     const no=document.createElement('button');
     no.style.cssText=btnStyle+';background:'+(isCa?'#dc2626':'#fff')+';color:'+(isCa?'#fff':'#dc2626')+';border-color:#dc2626';
-    no.textContent=isCa?'✕ Con cambios ✕':'✕ Solicitar cambios';
+    no.textContent=isCa?'✕ Con cambios':'✕ Pedir cambios';
     no.onclick=function(){aprAction(p.id,isCa?'pendiente':'cambios');};
-    row.appendChild(ok); row.appendChild(no); foot.appendChild(row);
+    // Cambios realizados (solo visible si hay cambios solicitados)
+    const re=document.createElement('button');
+    re.style.cssText=btnStyle+';background:'+(isRe?'#7c3aed':'#fff')+';color:'+(isRe?'#fff':'#7c3aed')+';border-color:#7c3aed';
+    re.textContent=isRe?'✓ Cambios listos':'✓ Cambios realizados';
+    re.onclick=function(){aprAction(p.id,isRe?'pendiente':'realizado');};
+    row.appendChild(ok);
+    row.appendChild(no);
+    if(isCa||isRe)row.appendChild(re);
+    foot.appendChild(row);
     if(isCa&&p.comentario_cliente){
       const d=document.createElement('div');
       d.style.cssText='margin-top:10px;padding:10px 13px;background:#fef2f2;border-radius:8px;font-size:12.5px;color:#b91c1c;font-style:italic';
       d.textContent='"'+p.comentario_cliente+'"'; foot.appendChild(d);
-    } else if(!isCa){
+    }
+    if(isCa){
       const ta=document.createElement('textarea');
       ta.id='acmt-'+p.id; ta.placeholder='Escriba aquí los cambios que necesita…';
       ta.style.cssText='width:100%;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13px;color:#111;outline:none;resize:vertical;min-height:75px;margin-top:10px;display:none;line-height:1.5';
       const sb=document.createElement('button');
-      sb.id='asavebtn-'+p.id; sb.textContent='Enviar respuesta';
+      sb.id='asavebtn-'+p.id; sb.textContent='Enviar comentario';
       sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#111;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-top:10px;display:none';
       const pid=p.id; sb.onclick=function(){aprSave(pid);};
       foot.appendChild(ta); foot.appendChild(sb);
@@ -2001,7 +2028,8 @@ function renderPlanListNew(){
               <div class="plan-row-sub">${TIPO_LBL[c.tipo]||c.tipo}${c.copy?' · '+esc(c.copy).substring(0,40)+'…':''}${c.estado_aprobacion==='cambios'&&c.comentario_cliente?' · 💬 '+esc(c.comentario_cliente).substring(0,25)+'…':''}</div>
             </div>
             <div class="plan-row-badges">
-              <div class="plan-row-ap ${c.estado_aprobacion||'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':'Pendiente'}"></div>
+              <div class="plan-row-ap ${c.estado_aprobacion==='aprobado'?'aprobado':c.estado_aprobacion==='cambios'?'cambios':c.estado_aprobacion==='realizado'?'realizado':'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':c.estado_aprobacion==='realizado'?'Cambios realizados':'Pendiente'}"></div>
+              <button onclick="event.stopPropagation();togglePublicado('${c.id}',${!!c.publicado})" title="${c.publicado?'Publicado':'Marcar como publicado'}" style="border:none;background:${c.publicado?'#16a34a':'#e5e7eb'};color:${c.publicado?'#fff':'#9ca3af'};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s">${c.publicado?'✓ Publicado':'Publicar'}</button>
             </div>
           </div>
           <button class="icon-btn del" onclick="event.stopPropagation();deletePlanPieza('${c.id}')" title="Eliminar" style="margin-right:12px">
@@ -2386,6 +2414,45 @@ function planDrop(e,targetId){
   const moved=allPlanContenido.splice(fi,1)[0];
   allPlanContenido.splice(ti,0,moved);
   _dragId=null;renderPlanListNew();
+}
+
+// ── PUBLICADO TOGGLE ──
+async function togglePublicado(id,current){
+  const{error}=await db.from('contenido').update({publicado:!current}).eq('id',id);
+  if(error){showToast('Error',true);return;}
+  const p=allPlanContenido.find(c=>c.id===id);
+  if(p){p.publicado=!current;renderPlanListNew();}
+  showToast(!current?'Marcado como publicado':'Desmarcado');
+}
+
+// ── EDITAR/ELIMINAR MES ──
+async function deleteMes(mesId,mode){
+  if(!confirm('¿Eliminar este mes? Se eliminarán también todas las piezas.'))return;
+  await db.from('contenido').delete().eq('mes_id',mesId);
+  await db.from('meses').delete().eq('id',mesId);
+  showToast('Mes eliminado');
+  if(mode==='plan'){
+    activePlanMesId=null;
+    await loadPlanMeses(activePlanCliente.id);
+    renderPlanMain();
+  } else {
+    activDialMesId=null;
+    await loadDialMeses(activDialCliente.id);
+    renderDialMain();
+  }
+}
+async function renameMes(mesId,mode){
+  const nombre=prompt('Nuevo nombre del mes:');
+  if(!nombre||!nombre.trim())return;
+  await db.from('meses').update({nombre:nombre.trim()}).eq('id',mesId);
+  showToast('Nombre actualizado');
+  if(mode==='plan'){
+    await loadPlanMeses(activePlanCliente.id);
+    renderPlanMain();
+  } else {
+    await loadDialMeses(activDialCliente.id);
+    renderDialMain();
+  }
 }
 
 // ── INIT ──
