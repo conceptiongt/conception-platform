@@ -1677,7 +1677,23 @@ async function loadAprobacion(tipo,clienteId,mesId){
       if(el)el.style.display=t===id?'block':'none';
     });
   };
+  // Handle carousel clicks via event delegation after body.innerHTML is set
+  window._aprCarouselClick=function(e){
+    var el=e.target.closest('[data-tab],[data-slide],[data-next],[data-prev]');
+    if(!el)return;
+    if(el.dataset.tab){window._aprTab(el.dataset.tab);return;}
+    if(el.dataset.slide){window._aprSlide(el.dataset.slide,parseInt(el.dataset.idx),parseInt(el.dataset.total));return;}
+    if(el.dataset.next){var pid=el.dataset.next;var tot=parseInt(el.dataset.total);window._aprSlide(pid,(_ss[pid]||0)+1,tot);return;}
+    if(el.dataset.prev){var pid=el.dataset.prev;var tot=parseInt(el.dataset.total);window._aprSlide(pid,(_ss[pid]||0)-1+tot,tot);return;}
+  };
 
+  window._aprLb=function(src){
+    var lb=document.createElement('div');
+    lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
+    var im=document.createElement('img');im.src=src;im.style.cssText='max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px';
+    lb.appendChild(im);lb.onclick=function(e){if(e.target===lb)lb.remove();};
+    document.body.appendChild(lb);
+  };
   var _ss={};
   window._aprSlide=function(pid,idx,total){
     idx=((idx%total)+total)%total;
@@ -1693,13 +1709,13 @@ async function loadAprobacion(tipo,clienteId,mesId){
     var urls=p.media_urls||[];if(!urls.length)return'';
     var pid='m'+p.id.replace(/-/g,'');
     if(p.tipo==='reel')return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">VIDEO</div><video src="'+urls[0]+'" controls playsinline style="width:100%;border-radius:10px;background:#000;max-height:70vh;display:block"></video></div>';
-    if(p.tipo==='post')return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">IMAGEN</div><img src="'+urls[0]+'" style="width:100%;height:auto;border-radius:10px;cursor:zoom-in;display:block" onclick="(function(){var lb=document.createElement('div');lb.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';var im=document.createElement('img');im.src=this.src;im.style.cssText='max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px';lb.appendChild(im);lb.onclick=function(e){if(e.target===lb)lb.remove();};document.body.appendChild(lb);}).call(this)"></div>';
+    if(p.tipo==='post')return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">IMAGEN</div><img src="'+urls[0]+'" style="width:100%;height:auto;border-radius:10px;cursor:zoom-in;display:block" onclick="window._aprLb(this.src)"></div>';
     if(p.tipo==='carrusel'){
       var p2='c'+pid;
       var imgs=urls.map(function(u,i){return'<img src="'+u+'" style="width:100%;height:auto;display:'+(i===0?'block':'none')+';border-radius:10px;cursor:zoom-in">';}).join('');
-      var dots=urls.map(function(_,i){return'<span id="_dot_'+p2+'_'+i+'" onclick="window._aprSlide(''+p2+'','+i+','+urls.length+')" style="display:inline-block;width:7px;height:7px;border-radius:50%;cursor:pointer;background:'+(i===0?'#111':'#ddd')+'"></span>';}).join('');
-      return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">CARRUSEL ('+urls.length+' imgs)</div><div id="_sl_'+p2+'">'+imgs+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><button onclick="window._aprSlide(''+p2+'',(_ss[''+p2+'']||0)-1+'+urls.length+','+urls.length+')" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8249;</button><div style="display:flex;gap:5px">'+dots+'</div><button onclick="window._aprSlide(''+p2+'',(_ss[''+p2+'']||0)+1,'+urls.length+')" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8250;</button></div><div style="text-align:center;font-size:11px;color:#999;margin-top:6px" id="_cnt_'+p2+'">1 / '+urls.length+'</div></div>';
-    }
+      var dots=urls.map(function(_,i){return'<span id="_dot_'+p2+'_'+i+'" data-slide="'+p2+'" data-idx="'+i+'" data-total="'+urls.length+'" style="display:inline-block;width:7px;height:7px;border-radius:50%;cursor:pointer;background:'+(i===0?'#111':'#ddd')+'"></span>';}).join('');
+      return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">CARRUSEL ('+urls.length+' imgs)</div><div id="_sl_'+p2+'">'+imgs+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><button data-prev="'+p2+'" data-total="'+urls.length+'" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8249;</button><div style="display:flex;gap:5px">'+dots+'</div><button data-next="'+p2+'" data-total="'+urls.length+'" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8250;</button></div><div style="text-align:center;font-size:11px;color:#999;margin-top:6px" id="_cnt_'+p2+'">1 / '+urls.length+'</div></div>';
+   }
     return'';
   }
 
@@ -1720,7 +1736,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
   function makeTabBtn(id,label,items){
     if(!items.length)return'';
     var ap=items.filter(function(p){return p.estado_aprobacion==='aprobado';}).length;
-    return'<button onclick="window._aprTab(''+id+'')" id="_tbtn_'+id+'" style="padding:12px 18px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">'+label+' <span style="background:#f3f4f6;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:2px">'+items.length+'</span>'+(ap?'<span style="background:#16a34a;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-left:3px">✓'+ap+'</span>':'')+'</button>';
+    return'<button data-tab="'+id+'" id="_tbtn_'+id+'" style="padding:12px 18px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">'+label+' <span style="background:#f3f4f6;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:2px">'+items.length+'</span>'+(ap?'<span style="background:#16a34a;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-left:3px">&#10003;'+ap+'</span>':'')+'</button>';
   }
 
   function makeTabSection(id,items){
@@ -1765,6 +1781,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
   document.body.innerHTML=pageHTML;
 
   // Build footers AFTER HTML is in DOM - exact same pattern as test file
+  document.body.addEventListener('click',window._aprCarouselClick);
   all.forEach(function(p){window._aprBuildFoot(p);});
   window._aprTab(firstTab);
 
