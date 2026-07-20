@@ -1608,7 +1608,14 @@ async function loadAprobacion(tipo,clienteId,mesId){
     const no=document.createElement('button');
     no.style.cssText=btnStyle+';background:'+(isCa?'#dc2626':'#fff')+';color:'+(isCa?'#fff':'#dc2626')+';border-color:#dc2626';
     no.textContent=isCa?'✕ Con cambios':'✕ Pedir cambios';
-    no.onclick=function(){aprAction(p.id,isCa?'pendiente':'cambios');};
+    no._pid=p.id; no._isCa=isCa;
+    no.onclick=function(){
+      if(this._isCa){window.aprSave(this._pid,'pendiente');}
+      else{
+        const f=document.getElementById('afoot-'+this._pid);
+        if(f){const t=f.querySelector('textarea');const s=f.querySelector('#asavebtn-'+this._pid);if(t){t.style.display='block';t.focus();}if(s)s.style.display='block';}
+      }
+    };
     // Cambios realizados (solo visible si hay cambios solicitados)
     const re=document.createElement('button');
     re.style.cssText=btnStyle+';background:'+(isRe?'#7c3aed':'#fff')+';color:'+(isRe?'#fff':'#7c3aed')+';border-color:#7c3aed';
@@ -1632,7 +1639,10 @@ async function loadAprobacion(tipo,clienteId,mesId){
     sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#111;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-top:10px;display:none';
     const pid=p.id; sb.onclick=function(){aprSave(pid);};
     foot.appendChild(ta); foot.appendChild(sb);
-    if(isCa){ta.style.display='block';sb.style.display='block';}
+    if(isCa){
+      ta.style.removeProperty('display');ta.style.display='block';
+      sb.style.removeProperty('display');sb.style.display='block';
+    }
   }
 
   function mediaBlock(p){
@@ -1736,10 +1746,14 @@ async function loadAprobacion(tipo,clienteId,mesId){
   };
   window.aprAction=function(piezaId,estado){
     if(estado==='cambios'){
-      const ta=document.getElementById('acmt-'+piezaId);
-      const sb=document.getElementById('asavebtn-'+piezaId);
-      if(ta){ta.style.display='block';ta.focus();}
-      if(sb)sb.style.display='block';
+      // Find textarea by traversing foot container
+      const foot=document.getElementById('afoot-'+piezaId);
+      if(foot){
+        const ta=foot.querySelector('textarea');
+        const sb=foot.querySelector('button:last-child');
+        if(ta){ta.style.cssText=ta.style.cssText.replace('display:none','display:block');ta.focus();}
+        if(sb&&sb.id==='asavebtn-'+piezaId){sb.style.cssText=sb.style.cssText.replace('display:none','display:block');}
+      }
     } else {
       window.aprSave(piezaId,estado);
     }
