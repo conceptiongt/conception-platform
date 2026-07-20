@@ -443,6 +443,14 @@ textarea.form-input{resize:vertical;}
 </style>
 </head>
 <body>
+<script>
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('aprob')&&p.get('cid')&&p.get('mid')){
+    document.documentElement.style.visibility='hidden';
+  }
+})();
+</script>
 <div class="sb-backdrop" id="backdrop" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
@@ -1597,7 +1605,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
     const base='flex:1;padding:11px;border-radius:10px;border:2px solid;font-size:12.5px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif';
     const btnOk=`<button data-action="ok" data-pid="${p.id}" data-isap="${isAp}" style="${base};background:${isAp?'#16a34a':'#fff'};color:${isAp?'#fff':'#16a34a'};border-color:#16a34a">${isAp?'✓ Aprobado':'✓ Aprobar'}</button>`;
     const btnNo=`<button data-action="no" data-pid="${p.id}" data-isca="${isCa}" style="${base};background:${isCa?'#dc2626':'#fff'};color:${isCa?'#fff':'#dc2626'};border-color:#dc2626">${isCa?'✕ Con cambios':'✕ Pedir cambios'}</button>`;
-    const btnRe=(isCa||isRe)?`<button data-action="re" data-pid="${p.id}" data-isre="${isRe}" style="${base};background:${isRe?'#7c3aed':'#fff'};color:${isRe?'#fff':'#7c3aed'};border-color:#7c3aed">${isRe?'✓ Cambios listos':'✓ Cambios realizados'}</button>`:'';
+    const btnRe=`<button data-action="re" data-pid="${p.id}" data-isre="${isRe}" style="${base};background:${isRe?'#7c3aed':'#fff'};color:${isRe?'#fff':'#7c3aed'};border-color:#7c3aed">${isRe?'✓ Cambios listos':'✓ Cambios realizados'}</button>`;
     const comentario=(isCa&&p.comentario_cliente)?`<div style="margin-top:10px;padding:10px 13px;background:#fef2f2;border-radius:8px;font-size:12.5px;color:#b91c1c;font-style:italic">"${esc(p.comentario_cliente)}"</div>`:'';
     return`<div style="display:flex;gap:8px;flex-wrap:wrap">${btnOk}${btnNo}${btnRe}</div>
 ${comentario}
@@ -1745,14 +1753,14 @@ ${comentario}
       if(isCa){
         doUpdate(pid,'pendiente','');
       } else {
-        // Show textarea and send button
+        // Find all elements in this foot container
         const foot=document.getElementById('foot-'+pid);
-        if(foot){
-          const ta=foot.querySelector('textarea');
-          const sb=foot.querySelector('[data-action="send"]');
-          if(ta){ta.style.display='block';ta.focus();}
-          if(sb)sb.style.display='block';
-        }
+        if(!foot){alert('Error: no se encontró el contenedor');return;}
+        const allEls=foot.querySelectorAll('[data-pid="'+pid+'"]');
+        allEls.forEach(function(elem){
+          if(elem.tagName==='TEXTAREA'){elem.style.display='block';elem.focus();}
+          if(elem.tagName==='BUTTON'&&elem.dataset.action==='send'){elem.style.display='block';}
+        });
       }
     } else if(action==='re'){
       const isRe=el.dataset.isre==='true';
