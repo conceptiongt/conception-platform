@@ -1623,16 +1623,16 @@ async function loadAprobacion(tipo,clienteId,mesId){
       d.style.cssText='margin-top:10px;padding:10px 13px;background:#fef2f2;border-radius:8px;font-size:12.5px;color:#b91c1c;font-style:italic';
       d.textContent='"'+p.comentario_cliente+'"'; foot.appendChild(d);
     }
-    if(isCa){
-      const ta=document.createElement('textarea');
-      ta.id='acmt-'+p.id; ta.placeholder='Escriba aquí los cambios que necesita…';
-      ta.style.cssText='width:100%;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13px;color:#111;outline:none;resize:vertical;min-height:75px;margin-top:10px;display:none;line-height:1.5';
-      const sb=document.createElement('button');
-      sb.id='asavebtn-'+p.id; sb.textContent='Enviar comentario';
-      sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#111;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-top:10px;display:none';
-      const pid=p.id; sb.onclick=function(){aprSave(pid);};
-      foot.appendChild(ta); foot.appendChild(sb);
-    }
+    // Always add textarea+button, show only when needed
+    const ta=document.createElement('textarea');
+    ta.id='acmt-'+p.id; ta.placeholder='Escriba aquí los cambios que necesita…';
+    ta.style.cssText='width:100%;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13px;color:#111;outline:none;resize:vertical;min-height:75px;margin-top:10px;display:none;line-height:1.5';
+    const sb=document.createElement('button');
+    sb.id='asavebtn-'+p.id; sb.textContent='Enviar comentario';
+    sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#111;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-top:10px;display:none';
+    const pid=p.id; sb.onclick=function(){aprSave(pid);};
+    foot.appendChild(ta); foot.appendChild(sb);
+    if(isCa){ta.style.display='block';sb.style.display='block';}
   }
 
   function mediaBlock(p){
