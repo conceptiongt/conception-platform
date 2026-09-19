@@ -802,6 +802,7 @@ const SUPA_URL='https://cllbdaijpgkxkygwpafg.supabase.co';
 const SUPA_KEY='sb_publishable_jBkICXLwt6H3yHx-EinuOw_GXIadEZv';
 const CLOUD_NAME='dbiho9diy';
 const CLOUD_PRESET='conception_upload';
+const CLOUD_VIDEO_PRESET='conception_video';
 const {createClient}=supabase;
 const db=createClient(SUPA_URL,SUPA_KEY);
 
@@ -1179,9 +1180,9 @@ function selectPlanTipo(tipo){
 async function uploadToCloudinary(file){
   const fd=new FormData();
   fd.append('file',file);
-  fd.append('upload_preset',CLOUD_PRESET);
-  const rt=file.type.startsWith('video/')?'video':'image';
-  fd.append('resource_type',rt);
+  const isVideo=file.type.startsWith('video/');
+  fd.append('upload_preset',isVideo?CLOUD_VIDEO_PRESET:CLOUD_PRESET);
+  const rt=isVideo?'video':'image';
   const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${rt}/upload`,{method:'POST',body:fd});
   const d=await r.json();
   if(d.error)throw new Error(d.error.message);
