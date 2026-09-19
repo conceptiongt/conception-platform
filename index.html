@@ -995,7 +995,19 @@ async function selectPlanClienteById(id){
   renderPlanMain();
 }
 async function loadPlanMeses(cid){const{data}=await db.from('meses').select('*').eq('cliente_id',cid).neq('tipo','dial').order('created_at');allPlanMeses=data||[];}
-async function loadPlanContenido(mid){const{data}=await db.from('contenido').select('*').eq('mes_id',mid).order('created_at');allPlanContenido=data||[];updatePlanDashboard();}
+async function loadPlanContenido(mid){
+  const{data}=await db.from('contenido').select('*').eq('mes_id',mid).order('created_at');
+  allPlanContenido=(data||[]).sort((a,b)=>{
+    const ta=a.tema||'';const tb=b.tema||'';
+    // Natural sort: numbers first, then alphabetical
+    const na=parseFloat(ta);const nb=parseFloat(tb);
+    if(!isNaN(na)&&!isNaN(nb))return na-nb;
+    if(!isNaN(na))return -1;
+    if(!isNaN(nb))return 1;
+    return ta.localeCompare(tb,'es',{numeric:true,sensitivity:'base'});
+  });
+  updatePlanDashboard();
+}
 
 const ST_LABEL={pendiente:'Pendiente',proceso:'En curso',revision:'En revisión',listo:'Listo'};
 const ST_CLS={pendiente:'st-pendiente',proceso:'st-proceso',revision:'st-revision',listo:'st-listo'};
@@ -1165,7 +1177,7 @@ function selectPlanTipo(tipo){
   const fi=document.getElementById('pp-file-input');
   if(tipo==='reel'){mt.textContent='Video del reel';sub.textContent='MP4, MOV';fi.accept='video/*';fi.multiple=false;}
   else if(tipo==='post'){mt.textContent='Imagen del post';sub.textContent='JPG, PNG, WEBP';fi.accept='image/*';fi.multiple=false;}
-  else{mt.textContent='Imágenes del carrusel (máx. 8)';sub.textContent='JPG, PNG — hasta 8 imágenes';fi.accept='image/*';fi.multiple=true;}
+  else{mt.textContent='Archivos del carrusel (máx. 8 — imagen o video)';sub.textContent='JPG, PNG, MP4, MOV — hasta 8 archivos';fi.accept='image/*,video/*';fi.multiple=true;}
   if(!editingPlanId)uploadedUrls=[];
   renderPlanMediaPreview();
 }
@@ -1180,7 +1192,7 @@ async function uploadToCloudinary(file){
 async function handlePlanFileSelect(event){
   if(isUploading)return;
   const files=Array.from(event.target.files);if(!files.length)return;
-  if(currentPlanTipo==='carrusel'&&(uploadedUrls.length+files.length)>8){showToast('Máximo 8 imágenes',true);return;}
+  if(currentPlanTipo==='carrusel'&&(uploadedUrls.length+files.length)>8){showToast('Máximo 8 archivos',true);return;}
   isUploading=true;
   const prog=document.getElementById('pp-upload-progress');const bar=document.getElementById('pp-upload-bar');
   prog.style.display='block';bar.style.width='0%';
@@ -1908,7 +1920,7 @@ function renderPlanListNew(){
             </div>
             <div class="plan-row-badges">
               <div class="plan-row-ap ${c.estado_aprobacion==='aprobado'?'aprobado':c.estado_aprobacion==='cambios'?'cambios':c.estado_aprobacion==='realizado'?'realizado':'pendiente'}" title="${c.estado_aprobacion==='aprobado'?'Aprobado':c.estado_aprobacion==='cambios'?'Con cambios':c.estado_aprobacion==='realizado'?'Cambios realizados':'Pendiente'}"></div>
-              <button onclick="event.stopPropagation();togglePublicado('${c.id}',${!!c.publicado})" title="${c.publicado?'Publicado':'Marcar como publicado'}" style="border:none;background:${c.publicado?'#16a34a':'#e5e7eb'};color:${c.publicado?'#fff':'#9ca3af'};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s">${c.publicado?'✓ Publicado':'Publicar'}</button>
+              <button onclick="event.stopPropagation();toggleProgramado('${c.id}',${!!c.programado})" title="${c.programado?'Programado':'Marcar como programado'}" style="border:none;background:${c.programado?'#2563eb':'#e5e7eb'};color:${c.programado?'#fff':'#9ca3af'};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;margin-right:4px">${c.programado?'📅 Programado':'Programar'}</button><button onclick="event.stopPropagation();togglePublicado('${c.id}',${!!c.publicado})" title="${c.publicado?'Publicado':'Marcar como publicado'}" style="border:none;background:${c.publicado?'#16a34a':'#e5e7eb'};color:${c.publicado?'#fff':'#9ca3af'};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s">${c.publicado?'✓ Publicado':'Publicar'}</button>
             </div>
           </div>
           <button class="icon-btn del" onclick="event.stopPropagation();deletePlanPieza('${c.id}')" title="Eliminar" style="margin-right:12px">
@@ -2160,6 +2172,14 @@ async function togglePublicado(id,current){
   const p=allPlanContenido.find(c=>c.id===id);
   if(p){p.publicado=!current;renderPlanListNew();}
   showToast(!current?'Marcado como publicado':'Desmarcado');
+}
+
+async function toggleProgramado(id,current){
+  const{error}=await db.from('contenido').update({programado:!current}).eq('id',id);
+  if(error){showToast('Error',true);return;}
+  const p=allPlanContenido.find(c=>c.id===id);
+  if(p){p.programado=!current;renderPlanListNew();}
+  showToast(!current?'Marcado como programado':'Desmarcado');
 }
 
 // ── EDITAR/ELIMINAR MES ──
