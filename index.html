@@ -1186,6 +1186,8 @@ async function uploadToCloudinary(file){
   const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${rt}/upload`,{method:'POST',body:fd});
   const d=await r.json();
   if(d.error)throw new Error(d.error.message);
+  // Cloudinary video URLs always contain /video/upload/
+  // Return URL as-is - detection relies on URL pattern
   return d.secure_url;
 }
 
@@ -1559,17 +1561,17 @@ async function loadAprobacion(tipo,clienteId,mesId){
     var urls=p.media_urls||[];if(!urls.length)return'';
     var pid='m'+p.id.replace(/-/g,'');
     if(p.tipo==='reel')return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">VIDEO</div><video src="'+urls[0]+'" controls playsinline style="width:100%;border-radius:10px;background:#000;max-height:70vh;display:block"></video></div>';
-    if(p.tipo==='post')return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">IMAGEN</div><img src="'+urls[0]+'" style="width:100%;height:auto;border-radius:10px;cursor:zoom-in;display:block" onclick="window._aprLb(this.src)"></div>';
+    if(p.tipo==='post'){var u0=urls[0];var isVid=/\.(mp4|mov|webm|avi)/i.test(u0)||u0.indexOf('/video/')>-1;return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">'+(isVid?'VIDEO':'IMAGEN')+'</div>'+(isVid?'<video src="'+u0+'" controls playsinline style="width:100%;height:auto;border-radius:10px;background:#000;max-height:500px;display:block"></video>':'<img src="'+u0+'" style="width:100%;height:auto;border-radius:10px;cursor:zoom-in;display:block" onclick="window._aprLb(this.src)">')+'</div>';}
     if(p.tipo==='carrusel'){
       var p2='c'+pid;
-      var isV=function(u){return/\.(mp4|mov|webm|avi)/i.test(u)||u.indexOf('/video/')>-1;};
+      var isV=function(u){return/\.(mp4|mov|webm|avi|m4v)/i.test(u)||u.indexOf('/video/')>-1||u.indexOf('video/upload')>-1;};
       var imgs=urls.map(function(u,i){
         var show=i===0?'block':'none';
         if(isV(u)){return'<video src="'+u+'" controls playsinline style="width:100%;height:auto;display:'+show+';border-radius:10px;background:#000;max-height:500px"></video>';}
         return'<img src="'+u+'" style="width:100%;height:auto;display:'+show+';border-radius:10px;cursor:zoom-in">';
       }).join('');
       var dots=urls.map(function(_,i){return'<span id="_dot_'+p2+'_'+i+'" data-slide="'+p2+'" data-idx="'+i+'" data-total="'+urls.length+'" style="display:inline-block;width:7px;height:7px;border-radius:50%;cursor:pointer;background:'+(i===0?'#111':'#ddd')+'"></span>';}).join('');
-      return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">CARRUSEL ('+urls.length+' imgs)</div><div id="_sl_'+p2+'">'+imgs+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><button data-prev="'+p2+'" data-total="'+urls.length+'" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8249;</button><div style="display:flex;gap:5px">'+dots+'</div><button data-next="'+p2+'" data-total="'+urls.length+'" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8250;</button></div><div style="text-align:center;font-size:11px;color:#999;margin-top:6px" id="_cnt_'+p2+'">1 / '+urls.length+'</div></div>';
+      return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">CARRUSEL ('+urls.length+' archivos)</div><div id="_sl_'+p2+'">'+imgs+'</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><button data-prev="'+p2+'" data-total="'+urls.length+'" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8249;</button><div style="display:flex;gap:5px">'+dots+'</div><button data-next="'+p2+'" data-total="'+urls.length+'" style="width:36px;height:36px;border-radius:50%;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-size:20px">&#8250;</button></div><div style="text-align:center;font-size:11px;color:#999;margin-top:6px" id="_cnt_'+p2+'">1 / '+urls.length+'</div></div>';
    }
     return'';
   }
@@ -2229,7 +2231,7 @@ async function init(){
   await Promise.all([loadClientes(),loadEmpleados()]);
   // Restore saved user
   const savedUser=localStorage.getItem('conception_user');
-  if(savedUser&&allEmpleados.find(e=>e.id===savedUser)){currentUserId=savedUser;updateCurrentUserDisplay();}
+  if(savedUser&&allEmpleados.find(e=>e.id===savedUser)){currentUserId=savedUser;}
   switchTab('clientes');
 }
 
