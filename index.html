@@ -1564,7 +1564,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
     if(p.tipo==='post'){var u0=urls[0];var isVid=/\.(mp4|mov|webm|avi)/i.test(u0)||u0.indexOf('/video/')>-1;return'<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">'+(isVid?'VIDEO':'IMAGEN')+'</div>'+(isVid?'<video src="'+u0+'" controls playsinline style="width:100%;height:auto;border-radius:10px;background:#000;max-height:500px;display:block"></video>':'<img src="'+u0+'" style="width:100%;height:auto;border-radius:10px;cursor:zoom-in;display:block" onclick="window._aprLb(this.src)">')+'</div>';}
     if(p.tipo==='carrusel'){
       var p2='c'+pid;
-      var isV=function(u){return/\.(mp4|mov|webm|avi|m4v)/i.test(u)||u.indexOf('/video/')>-1||u.indexOf('video/upload')>-1;};
+      var isV=function(u){return u.indexOf('/video/')>-1||u.indexOf('.mp4')>-1||u.indexOf('.mov')>-1||u.indexOf('.webm')>-1;};
       var imgs=urls.map(function(u,i){
         var show=i===0?'block':'none';
         if(isV(u)){return'<video src="'+u+'" controls playsinline style="width:100%;height:auto;display:'+show+';border-radius:10px;background:#000;max-height:500px"></video>';}
