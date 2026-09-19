@@ -1550,7 +1550,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
   window._aprSlide=function(pid,idx,total){
     idx=((idx%total)+total)%total;
     var sl=document.getElementById('_sl_'+pid);if(!sl)return;
-    sl.querySelectorAll('img').forEach(function(img,i){img.style.display=i===idx?'block':'none';});
+    sl.querySelectorAll('img,video').forEach(function(el,i){el.style.display=i===idx?'block':'none';});
     for(var i=0;i<total;i++){var d=document.getElementById('_dot_'+pid+'_'+i);if(d)d.style.background=i===idx?'#111':'#ddd';}
     var cnt=document.getElementById('_cnt_'+pid);if(cnt)cnt.textContent=(idx+1)+' / '+total;
     _ss[pid]=idx;
