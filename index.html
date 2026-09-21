@@ -1444,9 +1444,9 @@ async function loadAprobacion(tipo,clienteId,mesId){
   // ── DEFINE ALL GLOBALS FIRST ──
   window._aprToast=function(msg,err){
     var t=document.getElementById('_toast');if(!t)return;
-    t.textContent=msg;t.style.background=err?'#dc2626':'#111';
-    t.style.transform='translateY(0)';t.style.opacity='1';
-    setTimeout(function(){t.style.transform='translateY(60px)';t.style.opacity='0';},3000);
+    t.textContent=msg;t.style.background=err?'#dc2626':'#16a34a';
+    t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';
+    setTimeout(function(){t.style.transform='translateX(-50%) translateY(80px)';t.style.opacity='0';},3000);
   };
 
   window._aprShow=function(pid){
@@ -1480,7 +1480,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
     var isAp=p.estado_aprobacion==='aprobado';
     var isCa=p.estado_aprobacion==='cambios';
     var isRe=p.estado_aprobacion==='realizado';
-    var bs='flex:1;padding:11px;border-radius:10px;border:2px solid;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s';
+    var bs='flex:1;padding:12px;border-radius:12px;border:2px solid;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;letter-spacing:-.2px';
     foot.innerHTML='';
     var row=document.createElement('div');
     row.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
@@ -1578,7 +1578,7 @@ async function loadAprobacion(tipo,clienteId,mesId){
 
   function makeCard(p){
     var bg=p.tipo==='reel'?'linear-gradient(90deg,#be185d,#ec4899)':p.tipo==='post'?'linear-gradient(90deg,#2563eb,#60a5fa)':p.tipo==='carrusel'?'linear-gradient(90deg,#059669,#34d399)':'linear-gradient(90deg,#7c3aed,#a78bfa)';
-    return'<div style="background:#fff;border-radius:14px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.07)">'+
+    return'<div style="background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);animation:fadeUp .3s ease">'+
       '<div style="height:3px;background:'+bg+'"></div>'+
       '<div style="padding:16px 18px">'+
         (p.tema?'<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:10px">'+esc(p.tema)+'</div>':'')+
@@ -1598,41 +1598,88 @@ async function loadAprobacion(tipo,clienteId,mesId){
 
   function makeTabSection(id,items){
     if(!items.length)return'';
-    return'<div id="_tab_'+id+'" style="display:none">'+items.map(makeCard).join('')+'</div>';
+    var cfg=tabConfig[id]||{color:'#111',icon:'📄',label:id};
+    var header='<div style="display:flex;align-items:center;gap:10px;padding:16px 0 12px">'+
+      '<div style="width:36px;height:36px;background:'+cfg.bg+';border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">'+cfg.icon+'</div>'+
+      '<div><div style="font-size:15px;font-weight:700;color:'+cfg.color+'">'+cfg.label+'</div>'+
+      '<div style="font-size:12px;color:#9ca3af">'+items.length+' pieza'+(items.length!==1?'s':'')+'</div></div>'+
+    '</div>';
+    return'<div id="_tab_'+id+'" style="display:none">'+header+items.map(makeCard).join('')+'</div>';
   }
 
+  // Tab config with colors
+  var tabConfig={
+    reels:{icon:'🎬',label:'Reels',color:'#be185d',bg:'#fdf2f8',border:'#fbcfe8'},
+    posts:{icon:'🖼️',label:'Posts',color:'#2563eb',bg:'#eff6ff',border:'#bfdbfe'},
+    carruseles:{icon:'📑',label:'Carruseles',color:'#059669',bg:'#ecfdf5',border:'#a7f3d0'},
+    dialogos:{icon:'💬',label:'Diálogos',color:'#7c3aed',bg:'#f5f3ff',border:'#ddd6fe'}
+  };
+
   var pageHTML=
-    '<style>@keyframes spin{to{transform:rotate(360deg)}}</style>'+
-    '<div style="max-width:620px;margin:0 auto;padding:0 0 80px">'+
-      '<div style="background:#111;color:#fff;padding:28px 24px 24px">'+
-        '<div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;opacity:.4;margin-bottom:14px">Conception · Contenido para revisión</div>'+
-        '<div style="font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px">'+esc(cliente&&cliente.empresa||'')+'</div>'+
-        '<div style="font-size:12px;opacity:.4">'+esc(mes&&mes.nombre||'')+' · '+total+' piezas'+(aprobadas>0?' · '+aprobadas+' aprobada'+(aprobadas>1?'s':''):'')+'</div>'+
-        (total>0?'<div style="margin-top:16px;background:rgba(255,255,255,.1);border-radius:20px;height:3px"><div style="height:100%;background:#fff;border-radius:20px;width:'+pct+'%;transition:width .5s" id="_progbar"></div></div><div style="font-size:10px;opacity:.4;margin-top:5px;font-weight:600">'+pct+'% aprobado</div>':'')+
+    '<style>'+
+    '@keyframes spin{to{transform:rotate(360deg)}}'+
+    '@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}'+
+    '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");'+
+    '*{box-sizing:border-box;margin:0;padding:0}'+
+    'body{font-family:Inter,-apple-system,sans-serif;background:#f0f0f5;min-height:100vh}'+
+    '._tab-pill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:14px 10px;border-radius:14px;border:2px solid transparent;cursor:pointer;transition:all .2s;background:#fff;flex:1;min-width:72px;font-family:inherit}'+
+    '._tab-pill.active{border-color:currentColor;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}'+
+    '._tab-pill:hover:not(.active){background:#f8f8f8;transform:translateY(-1px)}'+
+    '</style>'+
+    '<div style="max-width:640px;margin:0 auto;padding:16px 12px 80px">'+
+
+      // HEADER
+      '<div style="background:linear-gradient(135deg,#1E0A3C,#3b0f6e);color:#fff;border-radius:20px;padding:28px 24px 24px;margin-bottom:16px;position:relative;overflow:hidden">'+
+        '<div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%"></div>'+
+        '<div style="position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;background:rgba(124,58,237,.2);border-radius:50%"></div>'+
+        '<div style="position:relative">'+
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
+            '<div style="width:28px;height:28px;background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">C</div>'+
+            '<span style="font-size:11px;font-weight:600;opacity:.6;letter-spacing:.1em;text-transform:uppercase">Conception · Revisión de contenido</span>'+
+          '</div>'+
+          '<div style="font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px">'+esc(cliente&&cliente.empresa||'')+'</div>'+
+          '<div style="font-size:13px;opacity:.55;margin-bottom:'+(total>0?'20':'0')+'px">'+esc(mes&&mes.nombre||'')+' · '+total+' pieza'+(total!==1?'s':'')+' para revisar</div>'+
+          (total>0?
+            '<div style="background:rgba(255,255,255,.12);border-radius:20px;height:6px;overflow:hidden">'+
+              '<div style="height:100%;background:linear-gradient(90deg,#A855F7,#7C3AED);border-radius:20px;width:'+pct+'%;transition:width .6s ease" id="_progbar"></div>'+
+            '</div>'+
+            '<div style="display:flex;justify-content:space-between;margin-top:8px">'+
+              '<span style="font-size:12px;opacity:.5">'+aprobadas+' de '+total+' aprobada'+(aprobadas!==1?'s':'')+'</span>'+
+              '<span style="font-size:12px;font-weight:700;color:#A855F7">'+pct+'%</span>'+
+            '</div>'
+          :'')+
+        '</div>'+
       '</div>'+
-      '<div style="margin:14px 12px 0;background:#fff;border-radius:12px;padding:14px 18px;font-size:13px;color:#6b7280;line-height:1.65;box-shadow:0 1px 3px rgba(0,0,0,.05)">Estimado cliente, a continuación encontrará el contenido preparado para su revisión. Seleccione si aprueba cada pieza o si necesita cambios.</div>'+
+
+      // TAB GRID - always visible, shows all content types
       (total>0?
-        '<div style="margin:12px 12px 0;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden">'+
-          '<div style="display:flex;border-bottom:1px solid #f3f4f6;overflow-x:auto" id="_tabbar">'+
-            makeTabBtn('reels','🎬 Reels',reels)+
-            makeTabBtn('posts','🖼️ Posts',posts)+
-            makeTabBtn('carruseles','📑 Carruseles',carruseles)+
-            makeTabBtn('dialogos','💬 Diálogos',dialogos)+
+        '<div style="margin-bottom:16px">'+
+          '<p style="font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;text-align:center">Selecciona una categoría para revisar</p>'+
+          '<div style="display:grid;grid-template-columns:repeat('+(([reels,posts,carruseles,dialogos].filter(function(a){return a.length;}).length))+'fr '.repeat([reels,posts,carruseles,dialogos].filter(function(a){return a.length;}).length).trim()+');gap:8px" id="_tabgrid">'+
+            (reels.length?'<button class="_tab-pill" data-tab="reels" id="_tbtn_reels" style="color:'+tabConfig.reels.color+'"><span style="font-size:24px">'+tabConfig.reels.icon+'</span><span style="font-size:12px;font-weight:700">Reels</span><span style="font-size:11px;background:'+tabConfig.reels.bg+';color:'+tabConfig.reels.color+';padding:2px 8px;border-radius:20px;font-weight:600">'+reels.length+'</span></button>':'')+
+            (posts.length?'<button class="_tab-pill" data-tab="posts" id="_tbtn_posts" style="color:'+tabConfig.posts.color+'"><span style="font-size:24px">'+tabConfig.posts.icon+'</span><span style="font-size:12px;font-weight:700">Posts</span><span style="font-size:11px;background:'+tabConfig.posts.bg+';color:'+tabConfig.posts.color+';padding:2px 8px;border-radius:20px;font-weight:600">'+posts.length+'</span></button>':'')+
+            (carruseles.length?'<button class="_tab-pill" data-tab="carruseles" id="_tbtn_carruseles" style="color:'+tabConfig.carruseles.color+'"><span style="font-size:24px">'+tabConfig.carruseles.icon+'</span><span style="font-size:12px;font-weight:700">Carruseles</span><span style="font-size:11px;background:'+tabConfig.carruseles.bg+';color:'+tabConfig.carruseles.color+';padding:2px 8px;border-radius:20px;font-weight:600">'+carruseles.length+'</span></button>':'')+
+            (dialogos.length?'<button class="_tab-pill" data-tab="dialogos" id="_tbtn_dialogos" style="color:'+tabConfig.dialogos.color+'"><span style="font-size:24px">'+tabConfig.dialogos.icon+'</span><span style="font-size:12px;font-weight:700">Diálogos</span><span style="font-size:11px;background:'+tabConfig.dialogos.bg+';color:'+tabConfig.dialogos.color+';padding:2px 8px;border-radius:20px;font-weight:600">'+dialogos.length+'</span></button>':'')+
           '</div>'+
-          '<div style="padding:14px">'+
-            makeTabSection('reels',reels)+
-            makeTabSection('posts',posts)+
-            makeTabSection('carruseles',carruseles)+
-            makeTabSection('dialogos',dialogos)+
-          '</div>'+
+        '</div>'+
+
+        // CONTENT SECTIONS
+        '<div id="_tabbar" style="display:none"></div>'+
+        '<div>'+
+          makeTabSection('reels',reels)+
+          makeTabSection('posts',posts)+
+          makeTabSection('carruseles',carruseles)+
+          makeTabSection('dialogos',dialogos)+
         '</div>'
-      :'<div style="padding:60px;text-align:center;color:#999">Sin contenido.</div>')+
-      '<div style="background:#fff;border-radius:12px;margin:12px 12px 0;padding:18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.05)">'+
-        '<div style="font-size:14px;font-weight:700;color:#111;margin-bottom:3px">¿Todo revisado?</div>'+
-        '<div style="font-size:12.5px;color:#9ca3af">Sus respuestas se guardan automáticamente.</div>'+
+      :'<div style="padding:60px;text-align:center;color:#999">Sin contenido para revisar.</div>')+
+
+      // FOOTER
+      '<div style="background:#fff;border-radius:16px;margin-top:16px;padding:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)">'+
+        '<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px">¿Todo revisado? ✓</div>'+
+        '<div style="font-size:13px;color:#9ca3af">Sus respuestas se guardan automáticamente. Gracias.</div>'+
       '</div>'+
     '</div>'+
-    '<div id="_toast" style="position:fixed;bottom:20px;right:20px;background:#111;color:#fff;padding:11px 17px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s;pointer-events:none;max-width:280px"></div>';
+    '<div id="_toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;padding:12px 20px;border-radius:50px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25)"></div>';
 
   document.body.style.cssText='margin:0;padding:0;background:#f5f5f3;min-height:100vh;font-family:-apple-system,sans-serif';
   document.body.innerHTML=pageHTML;
