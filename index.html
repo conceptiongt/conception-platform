@@ -533,7 +533,7 @@ textarea.form-input{resize:vertical;}
   </div>
 
   <!-- PLANIFICACIÓN -->
-  <div id="tab-planificacion" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+  <div id="tab-planificacion" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div class="client-selector-bar" id="planSelectorBar">
       <div class="client-search-wrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -858,10 +858,10 @@ function switchTab(tab){
     const el=document.getElementById('tab-'+t);
     if(el)el.style.display=t===tab?(FLEX_TABS.includes(t)?'flex':''):'none';
   });
-  document.querySelectorAll('.nav-item').forEach((el,i)=>{
-    el.classList.toggle('active',['clientes','planificacion','dialogos','reportes','tareas','empleados','ingenieria','ganchos-ia','mis-guiones','mis-ganchos'][i]===tab);
+  document.querySelectorAll('.nav-item[data-tab]').forEach(el=>{
+    el.classList.toggle('active',el.dataset.tab===tab);
   });
-  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes',tareas:'Tareas',empleados:'Empleados',ingenieria:'Ingeniería Inversa','ganchos-ia':'Creador de Ganchos','mis-guiones':'Mis Guiones','mis-ganchos':'Mis Ganchos'};
+  const titles={clientes:'Clientes',planificacion:'Planificación',dialogos:'Diálogos',reportes:'Reportes'};
   document.getElementById('pageTitle').textContent=titles[tab]||tab;
   const pc=document.getElementById('pageCount');
   const sw=document.getElementById('searchWrap');
@@ -883,7 +883,6 @@ async function loadClientes(){
   const{data}=await db.from('clientes').select('*').order('created_at',{ascending:false});
   allClientes=data||[];
   renderClientesTable();updateStats();
-  renderPlanClienteList();renderDialClienteList();
 }
 
 function openClienteModalById(id){const c=allClientes.find(x=>x.id===id);if(c)openClienteModal(c);}
