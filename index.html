@@ -533,64 +533,29 @@ textarea.form-input{resize:vertical;}
   </div>
 
   <!-- PLANIFICACIÓN -->
-  <div id="tab-planificacion" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-    <div class="client-selector-bar" id="planSelectorBar">
-      <div class="client-search-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="planClienteSearch" placeholder="Buscar cliente..." autocomplete="off"
-          oninput="filterPlanClientes(this.value)"
-          onfocus="document.getElementById('planClienteDropdown').style.display='block'"
-          style="width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s"
-          onfocus="this.style.borderColor='var(--purple)';document.getElementById('planClienteDropdown').style.display='block'"
-          onblur="this.style.borderColor='var(--gray-200)';setTimeout(()=>{document.getElementById('planClienteDropdown').style.display='none'},180)">
-        <div id="planClienteDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--gray-200);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;max-height:280px;overflow-y:auto" id="planClienteDropdown">
-          <div id="planClienteOptions"></div>
-        </div>
+  <div id="tab-planificacion" style="display:none;flex:1;overflow:hidden;">
+    <div class="plan-layout">
+      <div class="plan-sidebar">
+        <div class="plan-sidebar-head"><span class="plan-sidebar-title">Clientes</span></div>
+        <div class="cliente-list" id="planClienteList"><div style="padding:20px;text-align:center;"><div class="spinner"></div></div></div>
       </div>
-      <div id="planSelectedClient" style="display:none;align-items:center;gap:8px">
-        <div id="planClienteAvatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#A855F7);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0"></div>
-        <div>
-          <div id="planClienteNombre" style="font-size:14px;font-weight:700;color:var(--black);line-height:1.2"></div>
-          <div id="planClienteEstado" style="font-size:11px;color:var(--gray-400)"></div>
-        </div>
-        <button onclick="clearPlanCliente()" style="margin-left:4px;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;line-height:1;padding:2px">×</button>
+      <div class="plan-main" id="planMain">
+        <div class="no-selection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p>Selecciona un cliente</p></div>
       </div>
-    </div>
-    <div class="plan-main" id="planMain" style="flex:1;overflow:hidden">
-      <div class="no-selection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p>Busca y selecciona un cliente para comenzar</p></div>
     </div>
   </div>
-
   <!-- DIÁLOGOS -->
-  <div id="tab-dialogos" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
-    <div class="client-selector-bar" id="dialSelectorBar">
-      <div class="client-search-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="dialClienteSearch" placeholder="Buscar cliente..." autocomplete="off"
-          style="width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s"
-          oninput="filterDialClientes(this.value)"
-          onfocus="this.style.borderColor='var(--purple)';document.getElementById('dialClienteDropdown').style.display='block'"
-          onblur="this.style.borderColor='var(--gray-200)';setTimeout(()=>{document.getElementById('dialClienteDropdown').style.display='none'},180)">
-        <div id="dialClienteDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--gray-200);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;max-height:280px;overflow-y:auto">
-          <div id="dialClienteOptions"></div>
-        </div>
+  <div id="tab-dialogos" style="display:none;flex:1;overflow:hidden;">
+    <div class="plan-layout">
+      <div class="plan-sidebar">
+        <div class="plan-sidebar-head"><span class="plan-sidebar-title">Clientes</span></div>
+        <div class="cliente-list" id="dialClienteList"><div style="padding:20px;text-align:center;"><div class="spinner"></div></div></div>
       </div>
-      <div id="dialSelectedClient" style="display:none;align-items:center;gap:8px">
-        <div id="dialClienteAvatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#A855F7);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0"></div>
-        <div>
-          <div id="dialClienteNombre" style="font-size:14px;font-weight:700;color:var(--black);line-height:1.2"></div>
-          <div style="font-size:11px;color:var(--gray-400)">Diálogos</div>
-        </div>
-        <button onclick="clearDialCliente()" style="margin-left:4px;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;line-height:1;padding:2px">×</button>
-      </div>
-    </div>
-    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
-      <div class="plan-main" id="dialMain" style="flex:1;overflow:hidden">
+      <div class="plan-main" id="dialMain">
         <div class="no-selection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg><p>Selecciona un cliente</p></div>
       </div>
     </div>
   </div>
-
   <!-- REPORTES -->
   <div class="content" id="tab-reportes" style="display:none">
     <div class="placeholder-tab">
@@ -883,6 +848,7 @@ async function loadClientes(){
   const{data}=await db.from('clientes').select('*').order('created_at',{ascending:false});
   allClientes=data||[];
   renderClientesTable();updateStats();
+  renderPlanClienteList();renderDialClienteList();
 }
 
 function openClienteModalById(id){const c=allClientes.find(x=>x.id===id);if(c)openClienteModal(c);}
@@ -2302,31 +2268,24 @@ async function renameMes(mesId,mode){
 
 // ── CLIENT SEARCH / SELECTOR ──
 function buildClienteOptions(containerId, searchVal, onSelect) {
-  if(containerId==='planClienteOptions') window._planSelectCb=onSelect;
-  else window._dialSelectCb=onSelect;
-  var cbAttr=containerId==='planClienteOptions'?'data-plan-id':'data-dial-id';
-  var container=document.getElementById(containerId);
-  if(!container)return;
-  var filtered=allClientes.filter(function(c){
-    return !searchVal||c.empresa.toLowerCase().includes(searchVal.toLowerCase());
-  });
-  if(!filtered.length){
-    container.innerHTML='<div style="padding:14px;text-align:center;color:#9ca3af;font-size:13px">Sin resultados</div>';
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const filtered = allClientes.filter(c =>
+    !searchVal || c.empresa.toLowerCase().includes(searchVal.toLowerCase())
+  );
+  if(!filtered.length) {
+    container.innerHTML = '<div style="padding:14px;text-align:center;color:var(--gray-400);font-size:13px">Sin resultados</div>';
     return;
   }
-  container.innerHTML='';
-  filtered.forEach(function(c){
-    var div=document.createElement('div');
-    div.className='cliente-dropdown-item';
-    div.setAttribute(cbAttr,c.id);
-    div.innerHTML='<div class="cd-avatar">'+c.empresa.charAt(0).toUpperCase()+'</div>'+
-      '<div><div class="cd-name">'+esc(c.empresa)+'</div><div class="cd-sub">'+esc(c.estado||'Activo')+'</div></div>';
-    div.addEventListener('mousedown',function(e){e.preventDefault();});
-    div.addEventListener('click',function(){onSelect(c.id);});
-    container.appendChild(div);
-  });
+  container.innerHTML = filtered.map(c => `
+    <div class="cliente-dropdown-item" onmousedown="event.preventDefault();" onclick="(${onSelect.toString()})('${c.id}')">
+      <div class="cd-avatar">${c.empresa.charAt(0).toUpperCase()}</div>
+      <div>
+        <div class="cd-name">${esc(c.empresa)}</div>
+        <div class="cd-sub">${esc(c.estado||'Activo')}</div>
+      </div>
+    </div>`).join('');
 }
-
 
 function filterPlanClientes(val) {
   buildClienteOptions('planClienteOptions', val, selectPlanClienteById);
@@ -2335,8 +2294,7 @@ function filterPlanClientes(val) {
 
 function filterDialClientes(val) {
   buildClienteOptions('dialClienteOptions', val, selectDialClienteById);
-  var dd = document.getElementById('dialClienteDropdown');
-  if(dd) dd.style.display = 'block';
+  document.getElementById('dialClienteDropdown').style.display = 'block';
 }
 
 function showPlanClienteSelected(cliente) {
