@@ -539,9 +539,10 @@ textarea.form-input{resize:vertical;}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="planClienteSearch" placeholder="Buscar cliente..." autocomplete="off"
           oninput="filterPlanClientes(this.value)"
-          onfocus="this.style.borderColor='var(--purple)';filterPlanClientes(this.value)"
-          onblur="this.style.borderColor='var(--gray-200)';setTimeout(function(){document.getElementById('planClienteDropdown').style.display='none'},200)"
-          style="width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s">
+          onfocus="document.getElementById('planClienteDropdown').style.display='block'"
+          style="width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s"
+          onfocus="this.style.borderColor='var(--purple)';document.getElementById('planClienteDropdown').style.display='block'"
+          onblur="this.style.borderColor='var(--gray-200)';setTimeout(()=>{document.getElementById('planClienteDropdown').style.display='none'},180)">
         <div id="planClienteDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--gray-200);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;max-height:280px;overflow-y:auto" id="planClienteDropdown">
           <div id="planClienteOptions"></div>
         </div>
@@ -566,10 +567,10 @@ textarea.form-input{resize:vertical;}
       <div class="client-search-wrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="dialClienteSearch" placeholder="Buscar cliente..." autocomplete="off"
+          style="width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s"
           oninput="filterDialClientes(this.value)"
-          onfocus="this.style.borderColor='var(--purple)';filterDialClientes(this.value)"
-          onblur="this.style.borderColor='var(--gray-200)';setTimeout(function(){document.getElementById('dialClienteDropdown').style.display='none'},200)"
-          style="width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s">
+          onfocus="this.style.borderColor='var(--purple)';document.getElementById('dialClienteDropdown').style.display='block'"
+          onblur="this.style.borderColor='var(--gray-200)';setTimeout(()=>{document.getElementById('dialClienteDropdown').style.display='none'},180)">
         <div id="dialClienteDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--gray-200);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;max-height:280px;overflow-y:auto">
           <div id="dialClienteOptions"></div>
         </div>
@@ -868,14 +869,8 @@ function switchTab(tab){
   pc.style.display='none'; sw.style.display='none'; bp.style.display='none';
   if(tab==='clientes'){pc.style.display='';sw.style.display='';bp.style.display='';bp.textContent='+ Nuevo cliente';bp.onclick=openClienteModal;}
   if(tab==='empleados'){bp.style.display='';bp.textContent='+ Nuevo empleado';bp.onclick=()=>openEmpleadoModal();}
-  if(tab==='planificacion'){
-    renderPlanMain();
-    setTimeout(function(){buildClienteOptions('planClienteOptions','',selectPlanClienteById);},100);
-  }
-  if(tab==='dialogos'){
-    renderDialMain();
-    setTimeout(function(){buildClienteOptions('dialClienteOptions','',selectDialClienteById);},100);
-  }
+  if(tab==='planificacion')renderPlanClienteList();
+  if(tab==='dialogos')renderDialClienteList();
   closeSidebar();
 }
 
@@ -2307,36 +2302,38 @@ async function renameMes(mesId,mode){
 
 // ── CLIENT SEARCH / SELECTOR ──
 function buildClienteOptions(containerId, searchVal, onSelect) {
-  const container = document.getElementById(containerId);
-  if(!container) return;
-  const filtered = allClientes.filter(c =>
-    !searchVal || c.empresa.toLowerCase().includes(searchVal.toLowerCase())
-  );
-  if(!filtered.length) {
-    container.innerHTML = '<div style="padding:14px;text-align:center;color:var(--gray-400);font-size:13px">Sin resultados</div>';
+  if(containerId==='planClienteOptions') window._planSelectCb=onSelect;
+  else window._dialSelectCb=onSelect;
+  var cbAttr=containerId==='planClienteOptions'?'data-plan-id':'data-dial-id';
+  var container=document.getElementById(containerId);
+  if(!container)return;
+  var filtered=allClientes.filter(function(c){
+    return !searchVal||c.empresa.toLowerCase().includes(searchVal.toLowerCase());
+  });
+  if(!filtered.length){
+    container.innerHTML='<div style="padding:14px;text-align:center;color:#9ca3af;font-size:13px">Sin resultados</div>';
     return;
   }
-  // Store callback globally to avoid toString issues
-  window._clienteSelectorCb = onSelect;
-  container.innerHTML = filtered.map(c => `
-    <div class="cliente-dropdown-item" onmousedown="event.preventDefault();" onclick="window._clienteSelectorCb('${c.id}')">
-      <div class="cd-avatar">${c.empresa.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="cd-name">${esc(c.empresa)}</div>
-        <div class="cd-sub">${esc(c.estado||'Activo')}</div>
-      </div>
-    </div>`).join('');
+  container.innerHTML='';
+  filtered.forEach(function(c){
+    var div=document.createElement('div');
+    div.className='cliente-dropdown-item';
+    div.setAttribute(cbAttr,c.id);
+    div.innerHTML='<div class="cd-avatar">'+c.empresa.charAt(0).toUpperCase()+'</div>'+
+      '<div><div class="cd-name">'+esc(c.empresa)+'</div><div class="cd-sub">'+esc(c.estado||'Activo')+'</div></div>';
+    div.addEventListener('mousedown',function(e){e.preventDefault();});
+    div.addEventListener('click',function(){onSelect(c.id);});
+    container.appendChild(div);
+  });
 }
 
+
 function filterPlanClientes(val) {
-  window._clienteSelectorCb = selectPlanClienteById;
   buildClienteOptions('planClienteOptions', val, selectPlanClienteById);
-  var dd = document.getElementById('planClienteDropdown');
-  if(dd) dd.style.display = 'block';
+  document.getElementById('planClienteDropdown').style.display = 'block';
 }
 
 function filterDialClientes(val) {
-  window._clienteSelectorCb = selectDialClienteById;
   buildClienteOptions('dialClienteOptions', val, selectDialClienteById);
   var dd = document.getElementById('dialClienteDropdown');
   if(dd) dd.style.display = 'block';
