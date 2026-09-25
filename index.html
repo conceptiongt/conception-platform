@@ -106,26 +106,29 @@ tbody tr:hover .row-actions{opacity:1;}
 .empty-sub{font-size:13px;color:var(--gray-400);margin-bottom:20px;}
 .spinner{width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;}
+/* MODAL — Gmail-style sheet */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:#fff;border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;padding:28px;transform:translateY(12px);transition:transform .2s;}
-.modal-overlay.open .modal{transform:translateY(0);}
-.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;}
-.modal-title{font-size:18px;font-weight:600;}
-.modal-sub{font-size:13px;color:var(--gray-400);margin-top:3px;}
-.modal-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--gray-200);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-600);font-size:18px;line-height:1;transition:all .15s;flex-shrink:0;}
-.modal-close:hover{background:var(--gray-50);color:var(--black);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.form-group{display:flex;flex-direction:column;gap:6px;}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:0;transform:translateY(16px) scale(.98);transition:transform .25s,opacity .25s;box-shadow:0 20px 60px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.08);}
+.modal-overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 18px;border-bottom:1px solid var(--gray-100);}
+.modal-title{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+.modal-sub{font-size:12.5px;color:var(--gray-400);margin-top:2px;font-weight:400;}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-500);transition:all .15s;flex-shrink:0;font-size:20px;line-height:1;}
+.modal-close:hover{background:var(--gray-100);color:var(--black);}
+.modal-body{padding:22px 24px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
 .form-group.span-2{grid-column:span 2;}
-.form-label{font-size:12px;font-weight:600;color:var(--gray-600);letter-spacing:.04em;text-transform:uppercase;}
-.form-input{padding:9px 12px;border:1px solid var(--gray-200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--black);outline:none;transition:border-color .15s;background:#fff;width:100%;}
-.form-input:focus{border-color:var(--black);}
-textarea.form-input{resize:vertical;}
-.form-select{padding:9px 12px;border:1px solid var(--gray-200);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999890' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;width:100%;}
-.form-select:focus{border-color:var(--black);}
-.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-100);}
+.form-label{font-size:11.5px;font-weight:600;color:var(--gray-500);letter-spacing:.04em;}
+.form-input{padding:10px 13px;border:1.5px solid var(--gray-200);border-radius:9px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--black);outline:none;transition:border-color .15s,box-shadow .15s;background:#fff;width:100%;line-height:1.4;}
+.form-input:hover{border-color:var(--gray-300);}
+.form-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
+textarea.form-input{resize:vertical;min-height:80px;}
+.form-select{padding:10px 36px 10px 13px;border:1.5px solid var(--gray-200);border-radius:9px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--black);outline:none;background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6697' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;width:100%;}
+.form-select:hover{border-color:var(--gray-300);}
+.form-select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.1);outline:none;}
+.modal-footer{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:16px 24px;border-top:1px solid var(--gray-100);background:var(--gray-50);border-radius:0 0 16px 16px;}
 /* PLAN LAYOUT */
 .plan-layout{display:grid;grid-template-columns:240px 1fr;gap:0;height:calc(100vh - 65px);overflow:hidden;}
 .plan-sidebar{border-right:1px solid var(--gray-100);background:#fff;display:flex;flex-direction:column;overflow:hidden;}
@@ -179,17 +182,17 @@ textarea.form-input{resize:vertical;}
 .tipo-carrusel-b{background:#d1fae5;color:#065f46;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;}
 .resp-chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--gray-600);}
 .resp-av{width:22px;height:22px;border-radius:50%;background:var(--gray-200);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--gray-600);flex-shrink:0;}
-/* PANEL DESLIZABLE */
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:150;opacity:0;pointer-events:none;transition:opacity .2s;}
+/* PANEL DESLIZABLE — Gmail compose-inspired */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:150;opacity:0;pointer-events:none;transition:opacity .25s;}
 .panel-overlay.open{opacity:1;pointer-events:all;}
-.panel{position:fixed;top:0;right:0;width:580px;max-width:100vw;height:100vh;background:#fff;z-index:151;transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column;overflow:hidden;}
+.panel{position:fixed;top:0;right:0;width:600px;max-width:100vw;height:100vh;background:#fff;z-index:151;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 32px rgba(0,0,0,.12);}
 .panel.open{transform:translateX(0);}
-.panel-head{padding:20px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-title{font-size:16px;font-weight:600;}
+.panel-head{padding:18px 24px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff;}
+.panel-title{font-size:16px;font-weight:700;letter-spacing:-.2px;}
 .panel-sub{font-size:12px;color:var(--gray-400);margin-top:2px;}
-.panel-body{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;}
-.panel-section-title{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
-.panel-footer{padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-shrink:0;}
+.panel-body{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:22px;}
+.panel-section-title{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.panel-footer{padding:14px 24px;border-top:1px solid var(--gray-100);display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-shrink:0;background:var(--gray-50);}
 /* UPLOAD */
 .upload-zone{border:2px dashed var(--gray-200);border-radius:var(--rs);padding:20px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
 .upload-zone:hover{border-color:var(--black);}
@@ -227,32 +230,41 @@ textarea.form-input{resize:vertical;}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;cursor:pointer;}
 .lightbox-close{position:fixed;top:20px;right:24px;color:#fff;font-size:32px;cursor:pointer;z-index:501;line-height:1;opacity:.8;}
 .lightbox-close:hover{opacity:1;}
-/* APROBACION CLIENTE */
-.aprob-wrap{max-width:860px;margin:0 auto;min-height:100vh;padding-bottom:60px;}
-.aprob-header{background:var(--black);color:#fff;padding:28px 32px 24px;}
-.aprob-logo{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.5;margin-bottom:16px;}
-.aprob-cliente-name{font-size:26px;font-weight:700;letter-spacing:-.5px;}
-.aprob-meta{font-size:13px;opacity:.5;margin-top:6px;}
-.aprob-intro{margin:24px 24px 0;background:#fff;border:1px solid var(--gray-100);border-radius:var(--r);padding:16px 20px;font-size:13.5px;color:var(--gray-600);line-height:1.6;}
-.aprob-body{padding:24px;}
-.aprob-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:20px;}
-.aprob-card-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray-100);}
-.aprob-cuenta{font-size:13px;font-weight:600;}
-.aprob-tipo-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;}
-.aprob-tipo-reel{background:#fce7f3;color:#9d174d;}
-.aprob-tipo-post{background:#dbeafe;color:#1e40af;}
-.aprob-tipo-carrusel{background:#d1fae5;color:#065f46;}
-.aprob-tipo-dialogo{background:var(--purple-light);color:var(--purple);}
-.aprob-card-body{padding:20px;}
-.aprob-tema{font-size:15px;font-weight:700;margin-bottom:12px;}
-.aprob-copy{font-size:14px;line-height:1.7;color:var(--gray-800);white-space:pre-wrap;margin-bottom:4px;}
-.aprob-divider{height:1px;background:var(--gray-100);margin:14px 0;}
-.aprob-dial-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
-.aprob-dial{font-size:13.5px;line-height:1.8;color:var(--gray-800);white-space:pre-wrap;font-style:italic;}
+/* APROBACION CLIENTE — Professional review experience */
+.aprob-page-bg{min-height:100vh;background:linear-gradient(160deg,#f8f7ff 0%,#ede9fe 100%);}
+.aprob-wrap{max-width:780px;margin:0 auto;padding:0 0 80px;}
+.aprob-header{background:linear-gradient(135deg,var(--purple-deeper) 0%,#3b0764 100%);color:#fff;padding:36px 40px 32px;position:relative;overflow:hidden;}
+.aprob-header::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);}
+.aprob-header::after{content:'';position:absolute;bottom:-60px;right:60px;width:300px;height:300px;border-radius:50%;background:rgba(124,58,237,.15);}
+.aprob-logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;position:relative;z-index:1;}
+.aprob-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;box-shadow:0 4px 12px rgba(124,58,237,.5);}
+.aprob-logo-text{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.7;}
+.aprob-cliente-name{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;position:relative;z-index:1;}
+.aprob-meta{font-size:13px;opacity:.55;position:relative;z-index:1;display:flex;align-items:center;gap:12px;}
+.aprob-meta-dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4);}
+.aprob-intro{margin:24px 24px 0;background:#fff;border:1px solid rgba(124,58,237,.1);border-radius:14px;padding:18px 22px;font-size:13.5px;color:var(--gray-600);line-height:1.7;box-shadow:0 2px 8px rgba(124,58,237,.06);}
+.aprob-section-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.1em;padding:20px 24px 10px;}
+.aprob-body{padding:8px 24px 24px;}
+.aprob-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.05),0 1px 3px rgba(0,0,0,.04);}
+.aprob-card-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gray-100);background:var(--gray-50);}
+.aprob-cuenta{font-size:13px;font-weight:700;color:var(--black);}
+.aprob-tipo-badge{font-size:10.5px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;}
+.aprob-tipo-reel{background:#fdf2f8;color:#9d174d;border:1px solid #fce7f3;}
+.aprob-tipo-post{background:#eff6ff;color:#1e40af;border:1px solid #dbeafe;}
+.aprob-tipo-carrusel{background:#f0fdf4;color:#065f46;border:1px solid #d1fae5;}
+.aprob-tipo-dialogo{background:var(--purple-light);color:var(--purple);border:1px solid #ddd6fe;}
+.aprob-card-body{padding:20px 22px;}
+.aprob-num{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.aprob-tema{font-size:16px;font-weight:700;margin-bottom:14px;line-height:1.4;color:var(--black);}
+.aprob-copy-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.aprob-copy{font-size:14px;line-height:1.75;color:var(--gray-700);white-space:pre-wrap;margin-bottom:4px;padding:14px 16px;background:var(--gray-50);border-radius:10px;border-left:3px solid var(--gray-200);}
+.aprob-divider{height:1px;background:var(--gray-100);margin:16px 0;}
+.aprob-dial-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.aprob-dial{font-size:13.5px;line-height:1.8;color:var(--gray-700);white-space:pre-wrap;font-style:italic;padding:12px 16px;background:var(--purple-mid);border-radius:10px;}
 .aprob-media{margin-top:16px;}
-.aprob-media-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
-.aprob-media video{width:100%;border-radius:var(--rs);}
-.aprob-media img{width:100%;height:100%;object-fit:cover;border-radius:var(--rs);display:block;}
+.aprob-media-label{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+.aprob-media video{width:100%;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.aprob-media img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;}
 .carrusel-slider{position:relative;width:100%;aspect-ratio:4/5;background:#000;border-radius:var(--rs);overflow:hidden;margin-top:8px;}
 .carrusel-slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s;}
 .carrusel-slider img.active{opacity:1;}
@@ -441,6 +453,18 @@ textarea.form-input{resize:vertical;}
 .plan-row .icon-btn.del{opacity:0;transition:opacity .15s;}
 .plan-row:hover .icon-btn.del{opacity:1;}
 .plan-row:hover .icon-btn{opacity:1;}
+/* BUTTONS — Gmail-style */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:all .15s;letter-spacing:-.1px;white-space:nowrap;line-height:1;}
+.btn-primary{background:var(--purple);color:#fff;box-shadow:0 1px 4px rgba(124,58,237,.25);}
+.btn-primary:hover{background:var(--purple-dark);box-shadow:0 2px 8px rgba(124,58,237,.35);}
+.btn-primary:active{transform:scale(.97);}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.btn-ghost{background:none;color:var(--gray-700);border:1.5px solid var(--gray-200);}
+.btn-ghost:hover{background:var(--gray-50);border-color:var(--gray-300);color:var(--black);}
+.btn-ghost:active{transform:scale(.97);}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-danger:hover{opacity:.88;}
+.btn-sm{padding:6px 13px;font-size:12.5px;border-radius:7px;}
 </style>
 </head>
 <body>
@@ -574,38 +598,42 @@ textarea.form-input{resize:vertical;}
       <div><div class="modal-title" id="modalClienteTitle">Nuevo cliente</div><div class="modal-sub">Información del cliente</div></div>
       <button class="modal-close" onclick="closeModal('modalCliente')">×</button>
     </div>
-    <div class="form-grid">
-      <div class="form-group span-2"><label class="form-label">Nombre de empresa *</label><input class="form-input" type="text" id="f-empresa" placeholder="Ej. Grupo Innovar S.A."></div>
-      <div class="form-group"><label class="form-label">NIT *</label><input class="form-input" type="text" id="f-nit" placeholder="12345678-9"></div>
-      <div class="form-group"><label class="form-label">Estado</label>
-        <select class="form-select" id="f-estado"><option value="vigente">Vigente</option><option value="parcial">Parcial</option><option value="proceso" selected>En proceso</option><option value="terminado">Terminado</option><option value="proyecto">Por proyecto</option></select>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group span-2"><label class="form-label">Nombre de empresa *</label><input class="form-input" type="text" id="f-empresa" placeholder="Ej. Grupo Innovar S.A."></div>
+        <div class="form-group"><label class="form-label">NIT *</label><input class="form-input" type="text" id="f-nit" placeholder="12345678-9"></div>
+        <div class="form-group"><label class="form-label">Estado</label>
+          <select class="form-select" id="f-estado"><option value="vigente">Vigente</option><option value="parcial">Parcial</option><option value="proceso" selected>En proceso</option><option value="terminado">Terminado</option><option value="proyecto">Por proyecto</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Tipo de contrato</label>
+          <select class="form-select" id="f-tipo"><option value="Mensual">Mensual</option><option value="Anual">Anual</option><option value="Proyecto">Por proyecto</option><option value="Indefinido">Indefinido</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" type="tel" id="f-telefono" placeholder="+502 2222-0000"></div>
+        <div class="form-group span-2"><label class="form-label">Dirección</label><input class="form-input" type="text" id="f-direccion" placeholder="Zona 10, Ciudad de Guatemala"></div>
+        <div class="form-group span-2"><label class="form-label">Notas internas</label><textarea class="form-input" id="f-notas" rows="2" placeholder="Observaciones…"></textarea></div>
       </div>
-      <div class="form-group"><label class="form-label">Tipo de contrato</label>
-        <select class="form-select" id="f-tipo"><option value="Mensual">Mensual</option><option value="Anual">Anual</option><option value="Proyecto">Por proyecto</option><option value="Indefinido">Indefinido</option></select>
-      </div>
-      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" type="tel" id="f-telefono" placeholder="+502 2222-0000"></div>
-      <div class="form-group span-2"><label class="form-label">Dirección</label><input class="form-input" type="text" id="f-direccion" placeholder="Zona 10, Ciudad de Guatemala"></div>
-      <div class="form-group span-2"><label class="form-label">Notas internas</label><textarea class="form-input" id="f-notas" rows="2" placeholder="Observaciones…"></textarea></div>
-      <div style="grid-column:span 2"><div class="modal-footer" style="margin-top:0;padding-top:20px">
-        <button class="btn btn-ghost" onclick="closeModal('modalCliente')">Cancelar</button>
-        <button class="btn btn-primary" id="submitCliente" onclick="saveCliente()">Guardar cliente</button>
-      </div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalCliente')">Cancelar</button>
+      <button class="btn btn-primary" id="submitCliente" onclick="saveCliente()">Guardar cliente</button>
     </div>
   </div>
 </div>
 
 <!-- MES -->
 <div class="modal-overlay" id="modalMes" onclick="handleOverlay(event,'modalMes')">
-  <div class="modal" style="max-width:400px">
+  <div class="modal" style="max-width:420px">
     <div class="modal-header">
       <div><div class="modal-title">Nueva carpeta de mes</div><div class="modal-sub" id="modalMesSub">Planificación</div></div>
       <button class="modal-close" onclick="closeModal('modalMes')">×</button>
     </div>
-    <div class="form-group" style="margin-bottom:20px">
-      <label class="form-label">Nombre del período</label>
-      <input class="form-input" type="text" id="f-mes-nombre" placeholder="Ej. Junio 2025, Q3 Verano…">
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nombre del período</label>
+        <input class="form-input" type="text" id="f-mes-nombre" placeholder="Ej. Junio 2025, Q3 Verano…">
+      </div>
     </div>
-    <div class="modal-footer" style="padding-top:0;border:none">
+    <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalMes')">Cancelar</button>
       <button class="btn btn-primary" id="btnSaveMes" onclick="saveMes()">Crear carpeta</button>
     </div>
@@ -614,17 +642,19 @@ textarea.form-input{resize:vertical;}
 
 <!-- EMPLEADO -->
 <div class="modal-overlay" id="modalEmpleado" onclick="handleOverlay(event,'modalEmpleado')">
-  <div class="modal" style="max-width:420px">
+  <div class="modal" style="max-width:440px">
     <div class="modal-header">
       <div><div class="modal-title" id="modalEmpleadoTitle">Nuevo empleado</div><div class="modal-sub">Miembro del equipo</div></div>
       <button class="modal-close" onclick="closeModal('modalEmpleado')">×</button>
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div class="form-group"><label class="form-label">Nombre completo *</label><input class="form-input" type="text" id="e-nombre" placeholder="Ej. María García"></div>
-      <div class="form-group"><label class="form-label">Puesto</label><input class="form-input" type="text" id="e-puesto" placeholder="Ej. Diseñadora, Community Manager…"></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="e-email" placeholder="maria@conception.gt"></div>
-      <div class="form-group"><label class="form-label">Estado</label>
-        <select class="form-select" id="e-activo"><option value="true">Activo</option><option value="false">Inactivo</option></select>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="form-group"><label class="form-label">Nombre completo *</label><input class="form-input" type="text" id="e-nombre" placeholder="Ej. María García"></div>
+        <div class="form-group"><label class="form-label">Puesto</label><input class="form-input" type="text" id="e-puesto" placeholder="Ej. Diseñadora, Community Manager…"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="e-email" placeholder="maria@conception.gt"></div>
+        <div class="form-group"><label class="form-label">Estado</label>
+          <select class="form-select" id="e-activo"><option value="true">Activo</option><option value="false">Inactivo</option></select>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1478,40 +1508,44 @@ async function loadAprobacion(tipo,clienteId,mesId){
     var isAp=p.estado_aprobacion==='aprobado';
     var isCa=p.estado_aprobacion==='cambios';
     var isRe=p.estado_aprobacion==='realizado';
-    var bs='flex:1;padding:12px;border-radius:12px;border:2px solid;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;letter-spacing:-.2px';
+    var bs='flex:1;padding:11px 14px;border-radius:10px;border:2px solid;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s;letter-spacing:-.2px;display:flex;align-items:center;justify-content:center;gap:5px;box-sizing:border-box;min-width:0';
     foot.innerHTML='';
     var row=document.createElement('div');
-    row.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+    row.style.cssText='display:flex;gap:8px';
     var bOk=document.createElement('button');
-    bOk.style.cssText=bs+';background:'+(isAp?'#16a34a':'#fff')+';color:'+(isAp?'#fff':'#16a34a')+';border-color:#16a34a';
-    bOk.textContent=isAp?'✓ Aprobado':'✓ Aprobar';
+    bOk.style.cssText=bs+';background:'+(isAp?'#16a34a':'transparent')+';color:'+(isAp?'#fff':'#16a34a')+';border-color:#16a34a'+(isAp?';box-shadow:0 2px 8px rgba(22,163,74,.25)':'');
+    bOk.innerHTML=(isAp?'<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>':'')+( isAp?'Aprobado':'✓ Aprobar');
     bOk.onclick=function(){window._aprUpdate(p.id,isAp?'pendiente':'aprobado','');};
     var bNo=document.createElement('button');
-    bNo.style.cssText=bs+';background:'+(isCa?'#dc2626':'#fff')+';color:'+(isCa?'#fff':'#dc2626')+';border-color:#dc2626';
+    bNo.style.cssText=bs+';background:'+(isCa?'#dc2626':'transparent')+';color:'+(isCa?'#fff':'#dc2626')+';border-color:#dc2626'+(isCa?';box-shadow:0 2px 8px rgba(220,38,38,.25)':'');
     bNo.textContent=isCa?'✕ Con cambios':'✕ Pedir cambios';
     bNo.onclick=function(){if(isCa){window._aprUpdate(p.id,'pendiente','');}else{window._aprShow(p.id);}};
     var bRe=document.createElement('button');
-    bRe.style.cssText=bs+';background:'+(isRe?'#7c3aed':'#fff')+';color:'+(isRe?'#fff':'#7c3aed')+';border-color:#7c3aed';
+    bRe.style.cssText=bs+';background:'+(isRe?'#7c3aed':'transparent')+';color:'+(isRe?'#fff':'#7c3aed')+';border-color:#7c3aed'+(isRe?';box-shadow:0 2px 8px rgba(124,58,237,.25)':'');
     bRe.textContent=isRe?'✓ Cambios listos':'✓ Cambios realizados';
     bRe.onclick=function(){window._aprUpdate(p.id,isRe?'pendiente':'realizado','');};
     row.appendChild(bOk);row.appendChild(bNo);row.appendChild(bRe);
     foot.appendChild(row);
     if(isCa&&p.comentario_cliente){
       var dc=document.createElement('div');
-      dc.style.cssText='margin-top:10px;padding:10px 13px;background:#fef2f2;border-radius:8px;font-size:12.5px;color:#b91c1c;font-style:italic';
+      dc.style.cssText='margin-top:12px;padding:11px 14px;background:#fef2f2;border-radius:9px;font-size:13px;color:#b91c1c;font-style:italic;border-left:3px solid #dc2626';
       dc.textContent='"'+p.comentario_cliente+'"';
       foot.appendChild(dc);
     }
     var ta=document.createElement('textarea');
     ta.id='_ta_'+p.id;
-    ta.placeholder='Escriba los cambios que necesita…';
-    ta.style.cssText='width:100%;padding:11px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13px;color:#111;outline:none;resize:vertical;min-height:80px;margin-top:12px;line-height:1.5;box-sizing:border-box;display:'+(isCa?'block':'none');
+    ta.placeholder='Describa los cambios que necesita…';
+    ta.style.cssText='width:100%;padding:11px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13.5px;color:#111;outline:none;resize:vertical;min-height:90px;margin-top:12px;line-height:1.5;box-sizing:border-box;display:'+(isCa?'block':'none')+';transition:border-color .15s';
+    ta.onfocus=function(){this.style.borderColor='#7c3aed'};
+    ta.onblur=function(){this.style.borderColor='#e5e7eb'};
     if(isCa&&p.comentario_cliente)ta.value=p.comentario_cliente;
     foot.appendChild(ta);
     var sb=document.createElement('button');
     sb.id='_sb_'+p.id;
     sb.textContent='Enviar comentario';
-    sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#111;color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-top:8px;display:'+(isCa?'block':'none');
+    sb.style.cssText='width:100%;padding:11px;border-radius:10px;background:#7c3aed;color:#fff;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;margin-top:8px;display:'+(isCa?'block':'none')+';box-shadow:0 2px 8px rgba(124,58,237,.25);transition:all .15s;box-sizing:border-box';
+    sb.onmouseover=function(){this.style.background='#5b21b6'};
+    sb.onmouseout=function(){this.style.background='#7c3aed'};
     sb.onclick=function(){window._aprSend(p.id);};
     foot.appendChild(sb);
   };
@@ -1575,16 +1609,23 @@ async function loadAprobacion(tipo,clienteId,mesId){
   }
 
   function makeCard(p){
-    var bg=p.tipo==='reel'?'linear-gradient(90deg,#be185d,#ec4899)':p.tipo==='post'?'linear-gradient(90deg,#2563eb,#60a5fa)':p.tipo==='carrusel'?'linear-gradient(90deg,#059669,#34d399)':'linear-gradient(90deg,#7c3aed,#a78bfa)';
-    return'<div style="background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);animation:fadeUp .3s ease">'+
-      '<div style="height:3px;background:'+bg+'"></div>'+
-      '<div style="padding:16px 18px">'+
-        (p.tema?'<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:10px">'+esc(p.tema)+'</div>':'')+
-        (p.copy?'<div style="font-size:13.5px;line-height:1.75;color:#374151;white-space:pre-wrap">'+esc(p.copy)+'</div>':'')+
-        (p.dialogos?'<div style="margin-top:12px"><div style="font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">GUIÓN</div><div style="font-size:13.5px;line-height:1.85;color:#374151;white-space:pre-wrap;background:#f9fafb;border-radius:8px;padding:14px 16px">'+esc(p.dialogos)+'</div></div>':'')+
+    var accentColor=p.tipo==='reel'?'#be185d':p.tipo==='post'?'#2563eb':p.tipo==='carrusel'?'#059669':'#7c3aed';
+    var badgeCls=p.tipo==='reel'?'aprob-tipo-reel':p.tipo==='post'?'aprob-tipo-post':p.tipo==='carrusel'?'aprob-tipo-carrusel':'aprob-tipo-dialogo';
+    var badgeLabel=p.tipo==='reel'?'Reel':p.tipo==='post'?'Post':p.tipo==='carrusel'?'Carrusel':'Diálogo';
+    return'<div class="aprob-card" style="animation:fadeUp .3s ease">'+
+      '<div class="aprob-card-head">'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<div style="width:3px;height:20px;background:'+accentColor+';border-radius:2px"></div>'+
+          '<span class="aprob-tipo-badge '+badgeCls+'">'+badgeLabel+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="aprob-card-body">'+
+        (p.tema?'<div class="aprob-tema">'+esc(p.tema)+'</div>':'')+
+        (p.copy?'<div class="aprob-copy-label">Copy</div><div class="aprob-copy">'+esc(p.copy)+'</div>':'')+
+        (p.dialogos?'<div class="aprob-divider"></div><div class="aprob-dial-label">Guión</div><div class="aprob-dial">'+esc(p.dialogos)+'</div>':'')+
         mediaBlock(p)+
       '</div>'+
-      '<div style="padding:14px 18px;border-top:1px solid #f3f4f6" id="_foot_'+p.id+'"></div>'+
+      '<div class="aprob-card-foot"><div id="_foot_'+p.id+'"></div></div>'+
     '</div>';
   }
 
@@ -1619,31 +1660,50 @@ async function loadAprobacion(tipo,clienteId,mesId){
     '@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}'+
     '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");'+
     '*{box-sizing:border-box;margin:0;padding:0}'+
-    'body{font-family:Inter,-apple-system,sans-serif;background:#f0f0f5;min-height:100vh}'+
-    '._tab-pill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:14px 10px;border-radius:14px;border:2px solid transparent;cursor:pointer;transition:all .2s;background:#fff;flex:1;min-width:72px;font-family:inherit}'+
-    '._tab-pill.active{border-color:currentColor;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}'+
+    'body{font-family:Inter,-apple-system,sans-serif;background:linear-gradient(160deg,#f8f7ff 0%,#ede9fe 100%);min-height:100vh}'+
+    '._tab-pill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:14px 10px;border-radius:14px;border:2px solid transparent;cursor:pointer;transition:all .2s;background:#fff;flex:1;min-width:72px;font-family:inherit;box-shadow:0 1px 4px rgba(0,0,0,.06)}'+
+    '._tab-pill.active{border-color:currentColor;transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.12)}'+
     '._tab-pill:hover:not(.active){background:#f8f8f8;transform:translateY(-1px)}'+
+    '.aprob-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.05)}'+
+    '.aprob-card-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f3f4f6;background:#fafafa}'+
+    '.aprob-card-body{padding:20px 22px}'+
+    '.aprob-card-foot{padding:16px 20px;border-top:1px solid #f3f4f6;background:#fafafa}'+
+    '.aprob-tipo-badge{font-size:10.5px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}'+
+    '.aprob-tipo-reel{background:#fdf2f8;color:#9d174d;border:1px solid #fce7f3}'+
+    '.aprob-tipo-post{background:#eff6ff;color:#1e40af;border:1px solid #dbeafe}'+
+    '.aprob-tipo-carrusel{background:#f0fdf4;color:#065f46;border:1px solid #d1fae5}'+
+    '.aprob-tipo-dialogo{background:#f5f3ff;color:#7c3aed;border:1px solid #ddd6fe}'+
+    '.aprob-tema{font-size:16px;font-weight:700;margin-bottom:14px;line-height:1.4;color:#111}'+
+    '.aprob-copy-label{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}'+
+    '.aprob-copy{font-size:14px;line-height:1.75;color:#374151;white-space:pre-wrap;padding:14px 16px;background:#f9fafb;border-radius:10px;border-left:3px solid #e5e7eb}'+
+    '.aprob-divider{height:1px;background:#f3f4f6;margin:16px 0}'+
+    '.aprob-dial-label{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}'+
+    '.aprob-dial{font-size:13.5px;line-height:1.8;color:#374151;white-space:pre-wrap;font-style:italic;padding:12px 16px;background:#f5f3ff;border-radius:10px}'+
     '</style>'+
     '<div style="max-width:640px;margin:0 auto;padding:16px 12px 80px">'+
 
       // HEADER
-      '<div style="background:linear-gradient(135deg,#1E0A3C,#3b0f6e);color:#fff;border-radius:20px;padding:28px 24px 24px;margin-bottom:16px;position:relative;overflow:hidden">'+
-        '<div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.05);border-radius:50%"></div>'+
-        '<div style="position:absolute;bottom:-40px;left:-20px;width:100px;height:100px;background:rgba(124,58,237,.2);border-radius:50%"></div>'+
+      '<div style="background:linear-gradient(135deg,#1E0A3C 0%,#3b0764 100%);color:#fff;border-radius:20px;padding:32px 28px 28px;margin-bottom:16px;position:relative;overflow:hidden">'+
+        '<div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,.04);border-radius:50%"></div>'+
+        '<div style="position:absolute;bottom:-60px;right:60px;width:300px;height:300px;background:rgba(124,58,237,.1);border-radius:50%"></div>'+
         '<div style="position:relative">'+
-          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
-            '<div style="width:28px;height:28px;background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">C</div>'+
-            '<span style="font-size:11px;font-weight:600;opacity:.6;letter-spacing:.1em;text-transform:uppercase">Conception · Revisión de contenido</span>'+
+          '<div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:20px">'+
+            '<div style="width:32px;height:32px;background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(124,58,237,.5)">C</div>'+
+            '<span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.65">Conception</span>'+
           '</div>'+
-          '<div style="font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px">'+esc(cliente&&cliente.empresa||'')+'</div>'+
-          '<div style="font-size:13px;opacity:.55;margin-bottom:'+(total>0?'20':'0')+'px">'+esc(mes&&mes.nombre||'')+' · '+total+' pieza'+(total!==1?'s':'')+' para revisar</div>'+
+          '<div style="font-size:30px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px">'+esc(cliente&&cliente.empresa||'')+'</div>'+
+          '<div style="display:flex;align-items:center;gap:12px;font-size:13px;opacity:.55;margin-bottom:'+(total>0?'24':'0')+'px">'+
+            '<span>'+esc(mes&&mes.nombre||'')+'</span>'+
+            '<span style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block"></span>'+
+            '<span>'+total+' pieza'+(total!==1?'s':'')+' para revisar</span>'+
+          '</div>'+
           (total>0?
             '<div style="background:rgba(255,255,255,.12);border-radius:20px;height:6px;overflow:hidden">'+
               '<div style="height:100%;background:linear-gradient(90deg,#A855F7,#7C3AED);border-radius:20px;width:'+pct+'%;transition:width .6s ease" id="_progbar"></div>'+
             '</div>'+
             '<div style="display:flex;justify-content:space-between;margin-top:8px">'+
               '<span style="font-size:12px;opacity:.5">'+aprobadas+' de '+total+' aprobada'+(aprobadas!==1?'s':'')+'</span>'+
-              '<span style="font-size:12px;font-weight:700;color:#A855F7">'+pct+'%</span>'+
+              '<span style="font-size:12px;font-weight:800;color:#c4b5fd">'+pct+'%</span>'+
             '</div>'
           :'')+
         '</div>'+
@@ -1672,9 +1732,10 @@ async function loadAprobacion(tipo,clienteId,mesId){
       :'<div style="padding:60px;text-align:center;color:#999">Sin contenido para revisar.</div>')+
 
       // FOOTER
-      '<div style="background:#fff;border-radius:16px;margin-top:16px;padding:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)">'+
-        '<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:4px">¿Todo revisado? ✓</div>'+
-        '<div style="font-size:13px;color:#9ca3af">Sus respuestas se guardan automáticamente. Gracias.</div>'+
+      '<div style="background:#fff;border-radius:16px;margin-top:20px;padding:24px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.06)">'+
+        '<div style="width:40px;height:40px;background:linear-gradient(135deg,#7C3AED,#A855F7);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:18px">✓</div>'+
+        '<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px">Todo listo</div>'+
+        '<div style="font-size:13px;color:#9ca3af;line-height:1.6">Sus respuestas se guardan automáticamente.<br>Gracias por su tiempo.</div>'+
       '</div>'+
     '</div>'+
     '<div id="_toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;padding:12px 20px;border-radius:50px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25)"></div>';
@@ -2265,90 +2326,6 @@ async function renameMes(mesId,mode){
     renderDialMain();
   }
 }
-
-// ── CLIENT SEARCH / SELECTOR ──
-function buildClienteOptions(containerId, searchVal, onSelect) {
-  const container = document.getElementById(containerId);
-  if(!container) return;
-  const filtered = allClientes.filter(c =>
-    !searchVal || c.empresa.toLowerCase().includes(searchVal.toLowerCase())
-  );
-  if(!filtered.length) {
-    container.innerHTML = '<div style="padding:14px;text-align:center;color:var(--gray-400);font-size:13px">Sin resultados</div>';
-    return;
-  }
-  container.innerHTML = filtered.map(c => `
-    <div class="cliente-dropdown-item" onmousedown="event.preventDefault();" onclick="(${onSelect.toString()})('${c.id}')">
-      <div class="cd-avatar">${c.empresa.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="cd-name">${esc(c.empresa)}</div>
-        <div class="cd-sub">${esc(c.estado||'Activo')}</div>
-      </div>
-    </div>`).join('');
-}
-
-function filterPlanClientes(val) {
-  buildClienteOptions('planClienteOptions', val, selectPlanClienteById);
-  document.getElementById('planClienteDropdown').style.display = 'block';
-}
-
-function filterDialClientes(val) {
-  buildClienteOptions('dialClienteOptions', val, selectDialClienteById);
-  document.getElementById('dialClienteDropdown').style.display = 'block';
-}
-
-function showPlanClienteSelected(cliente) {
-  const search = document.getElementById('planClienteSearch');
-  const selected = document.getElementById('planSelectedClient');
-  const avatar = document.getElementById('planClienteAvatar');
-  const nombre = document.getElementById('planClienteNombre');
-  const estado = document.getElementById('planClienteEstado');
-  const dropdown = document.getElementById('planClienteDropdown');
-  if(search) search.style.display = 'none';
-  if(selected) selected.style.display = 'flex';
-  if(avatar) avatar.textContent = cliente.empresa.charAt(0).toUpperCase();
-  if(nombre) nombre.textContent = cliente.empresa;
-  if(estado) estado.textContent = cliente.estado || 'Cliente activo';
-  if(dropdown) dropdown.style.display = 'none';
-}
-
-function showDialClienteSelected(cliente) {
-  const search = document.getElementById('dialClienteSearch');
-  const selected = document.getElementById('dialSelectedClient');
-  const avatar = document.getElementById('dialClienteAvatar');
-  const nombre = document.getElementById('dialClienteNombre');
-  const dropdown = document.getElementById('dialClienteDropdown');
-  if(search) search.style.display = 'none';
-  if(selected) selected.style.display = 'flex';
-  if(avatar) avatar.textContent = cliente.empresa.charAt(0).toUpperCase();
-  if(nombre) nombre.textContent = cliente.empresa;
-  if(dropdown) dropdown.style.display = 'none';
-}
-
-function clearPlanCliente() {
-  activePlanCliente = null;
-  activePlanMesId = null;
-  const search = document.getElementById('planClienteSearch');
-  const selected = document.getElementById('planSelectedClient');
-  if(search){ search.style.display = ''; search.value = ''; }
-  if(selected) selected.style.display = 'none';
-  buildClienteOptions('planClienteOptions', '', selectPlanClienteById);
-  renderPlanMain();
-}
-
-function clearDialCliente() {
-  activDialCliente = null;
-  activDialMesId = null;
-  const search = document.getElementById('dialClienteSearch');
-  const selected = document.getElementById('dialSelectedClient');
-  if(search){ search.style.display = ''; search.value = ''; }
-  if(selected) selected.style.display = 'none';
-  buildClienteOptions('dialClienteOptions', '', selectDialClienteById);
-  renderDialMain();
-}
-
-// Override selectPlanClienteById to also update UI
-const _origSelectPlanCliente = typeof selectPlanClienteById !== 'undefined' ? selectPlanClienteById : null;
 
 // ── INIT ──
 async function init(){
